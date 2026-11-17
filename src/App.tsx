@@ -30,6 +30,7 @@ export default function App() {
   const [piece, setPiece] = useState<string | null>(null)
   const [highlight, setHighlight] = useState<string[]>([])
   const [focusKey, setFocusKey] = useState(0)
+  const [resetKey, setResetKey] = useState(0)
   const [stack, setStack] = useState<DrawerItem[]>([])
   const [side, setSide] = useState<'detail' | 'index'>('detail')
   const [extra, setExtra] = useState<Structure[]>([])
@@ -118,7 +119,21 @@ export default function App() {
   return (
     <div className="app">
       <header className="topbar">
-        <div className="brand">
+        <button
+          className="brand"
+          onClick={() => {
+            setSelectedId(null)
+            setPiece(null)
+            setHighlight([])
+            setStack([])
+            setSide('detail')
+            go('body')
+            setResetKey((k) => k + 1)
+            window.scrollTo({ top: 0, behavior: 'smooth' })
+          }}
+          aria-label="MedPeriodic: reset to the standard body view"
+          title="Reset to the standard body view"
+        >
           <svg viewBox="0 0 40 40" aria-hidden="true" className="logo">
             <circle cx="20" cy="20" r="4.2" fill="currentColor" />
             <ellipse cx="20" cy="20" rx="16" ry="6.5" fill="none" stroke="currentColor" strokeWidth="1.4" />
@@ -128,7 +143,7 @@ export default function App() {
             <strong>MedPeriodic</strong>
             <small>Anatomy and the elements</small>
           </div>
-        </div>
+        </button>
         <nav className="tabs" aria-label="Sections">
           {VIEWS.map((v) => (
             <button key={v.id} className={view === v.id ? 'on' : ''} onClick={() => go(v.id)} aria-current={view === v.id ? 'page' : undefined}>
@@ -141,7 +156,7 @@ export default function App() {
       <main>
         <div className="explorer" hidden={view !== 'body'}>
           <Suspense fallback={<div className="viewer viewer-fallback">Starting 3D engine…</div>}>
-            <Viewer3D highlight={highlight} focusKey={focusKey} calloutLabel={callout} onPick={pick} onIndex={onIndex} />
+            <Viewer3D highlight={highlight} focusKey={focusKey} resetKey={resetKey} calloutLabel={callout} onPick={pick} onIndex={onIndex} />
           </Suspense>
           <div className="side">
             <div className="seg side-tabs">

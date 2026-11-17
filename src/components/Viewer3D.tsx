@@ -52,12 +52,13 @@ const LABELS: Record<string, [string, 'R' | 'L'][]> = {
 interface Props {
   highlight: string[]
   focusKey: number
+  resetKey: number
   calloutLabel: string | null
   onPick: (meta: PartMeta | null) => void
   onIndex: (index: ModelIndex, byStruct: Map<string, string[]>) => void
 }
 
-export default function Viewer3D({ highlight, focusKey, calloutLabel, onPick, onIndex }: Props) {
+export default function Viewer3D({ highlight, focusKey, resetKey, calloutLabel, onPick, onIndex }: Props) {
   const host = useRef<HTMLDivElement>(null)
   const sceneRef = useRef<AnatomyScene | null>(null)
   const [layers, setLayers] = useState<LayerState>(() => ({ ...ALL_OFF(), muscles: { visible: true, opacity: 1 }, skeleton: { visible: true, opacity: 1 } }))
@@ -176,6 +177,21 @@ export default function Viewer3D({ highlight, focusKey, calloutLabel, onPick, on
   useEffect(() => {
     sceneRef.current?.setExplode(explode)
   }, [explode, loadedLayers])
+
+  // Reset to the standard view: muscles over skeleton, front view, nothing exploded, hidden or isolated.
+  useEffect(() => {
+    if (!resetKey) return
+    setLayers({ ...ALL_OFF(), muscles: { visible: true, opacity: 1 }, skeleton: { visible: true, opacity: 1 } })
+    setPreset('muscles')
+    setExplode(0)
+    setLabelsOn(false)
+    setIsolated(false)
+    setHover(null)
+    const s = sceneRef.current
+    s?.showAll()
+    s?.setExplode(0)
+    s?.view('front')
+  }, [resetKey])
 
   // ---------- textbook labels ----------
   useEffect(() => {

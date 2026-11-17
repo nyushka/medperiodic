@@ -114,14 +114,14 @@ export function gridPos(e: BasicElement): { row: number; col: number } {
 }
 
 export const CATEGORY_COLORS: Record<ElementCategory, string> = {
-  'alkali metal': '#ff7a59',
-  'alkaline earth metal': '#ffb347',
-  'transition metal': '#f06292',
-  'post-transition metal': '#90a4ae',
-  metalloid: '#4dd0e1',
-  nonmetal: '#7ee787',
-  halogen: '#ffd54f',
-  'noble gas': '#b39ddb',
-  lanthanide: '#80cbc4',
-  actinide: '#ef9a9a',
+  'alkali metal': '#d0694a',
+  'alkaline earth metal': '#d39a3a',
+  'transition metal': '#b75a7c',
+  'post-transition metal': '#7d8a96',
+  metalloid: '#3f9aa6',
+  nonmetal: '#4f9a5c',
+  halogen: '#b79a2c',
+  'noble gas': '#7a6fb8',
+  lanthanide: '#4f9c8f',
+  actinide: '#b56a6a',
 }

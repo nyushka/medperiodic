@@ -120,15 +120,13 @@ export default function App() {
       <header className="topbar">
         <div className="brand">
           <svg viewBox="0 0 40 40" aria-hidden="true" className="logo">
-            <rect x="6" y="6" width="28" height="28" fill="none" stroke="#00f0ff" strokeWidth="2" transform="rotate(45 20 20)" />
-            <circle cx="20" cy="20" r="5" fill="#ff2bd6" />
-            <ellipse cx="20" cy="20" rx="16" ry="6" fill="none" stroke="#f5ff3b" strokeWidth="1.4" transform="rotate(-30 20 20)" />
+            <circle cx="20" cy="20" r="4.2" fill="currentColor" />
+            <ellipse cx="20" cy="20" rx="16" ry="6.5" fill="none" stroke="currentColor" strokeWidth="1.4" />
+            <ellipse cx="20" cy="20" rx="16" ry="6.5" fill="none" stroke="currentColor" strokeWidth="1.4" transform="rotate(60 20 20)" opacity="0.55" />
           </svg>
           <div>
-            <strong>
-              Med<span>Periodic</span>
-            </strong>
-            <small>Anatomy × the periodic table</small>
+            <strong>MedPeriodic</strong>
+            <small>Anatomy and the elements</small>
           </div>
         </div>
         <nav className="tabs" aria-label="Sections">

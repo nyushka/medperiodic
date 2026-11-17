@@ -49,18 +49,18 @@ export interface Structure {
 }
 
 export const SYSTEMS: Record<System, { label: string; color: string }> = {
-  skeletal: { label: 'Skeletal', color: '#f1e3c6' },
-  muscular: { label: 'Muscular', color: '#ff5d6c' },
-  nervous: { label: 'Nervous', color: '#ffd84d' },
-  cardiovascular: { label: 'Cardiovascular', color: '#ff2e55' },
-  respiratory: { label: 'Respiratory', color: '#6ad5ff' },
-  digestive: { label: 'Digestive', color: '#ff9b42' },
-  urinary: { label: 'Urinary', color: '#f7c948' },
-  reproductive: { label: 'Reproductive', color: '#ff7bc5' },
-  endocrine: { label: 'Endocrine', color: '#b78cff' },
-  lymphatic: { label: 'Lymphatic & immune', color: '#4fe39b' },
-  integumentary: { label: 'Skin & hair', color: '#e8b58c' },
-  sensory: { label: 'Special senses', color: '#4de1e1' },
+  skeletal: { label: 'Skeletal', color: '#bfa77a' },
+  muscular: { label: 'Muscular', color: '#c0453f' },
+  nervous: { label: 'Nervous', color: '#c99a1e' },
+  cardiovascular: { label: 'Cardiovascular', color: '#b8283a' },
+  respiratory: { label: 'Respiratory', color: '#4f97c4' },
+  digestive: { label: 'Digestive', color: '#d47a3a' },
+  urinary: { label: 'Urinary', color: '#c9a227' },
+  reproductive: { label: 'Reproductive', color: '#c35d8f' },
+  endocrine: { label: 'Endocrine', color: '#7f63c0' },
+  lymphatic: { label: 'Lymphatic & immune', color: '#3c9a6a' },
+  integumentary: { label: 'Skin & hair', color: '#c48a64' },
+  sensory: { label: 'Special senses', color: '#3a9fa3' },
 }
 
 export const KINDS: Record<Kind, { label: string; plural: string }> = {

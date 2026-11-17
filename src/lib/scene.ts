@@ -70,8 +70,8 @@ function colorFor(p: PartMeta): { color: string; opacity?: number; rough?: numbe
   }
 }
 
-const HIGHLIGHT = new THREE.Color('#00e5ff')
-const HOVER = new THREE.Color('#ff3fd8')
+const HIGHLIGHT = new THREE.Color('#2f6fed')
+const HOVER = new THREE.Color('#f2b33d')
 const BLACK = new THREE.Color(0)
 
 export interface SceneCallbacks {
@@ -117,34 +117,36 @@ export class AnatomyScene {
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' })
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, window.innerWidth < 700 ? 1.5 : 2))
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping
-    this.renderer.toneMappingExposure = 1.05
+    this.renderer.toneMappingExposure = 1.0
     this.renderer.outputColorSpace = THREE.SRGBColorSpace
     host.appendChild(this.renderer.domElement)
     ;(this.raycaster as THREE.Raycaster & { firstHitOnly?: boolean }).firstHitOnly = true
 
     const pmrem = new THREE.PMREMGenerator(this.renderer)
     this.scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture
-    this.scene.environmentIntensity = 0.55
-    this.scene.add(new THREE.HemisphereLight(0xe6f6ff, 0x1c0f2c, 0.75))
-    const key = new THREE.DirectionalLight(0xffffff, 2.3)
-    key.position.set(1.6, 3.2, 3.4)
-    const fill = new THREE.DirectionalLight(0xa9e4ff, 0.7)
-    fill.position.set(-2.4, 1.2, 2.2)
-    const rimA = new THREE.DirectionalLight(0x00f0ff, 1.1)
-    rimA.position.set(2.2, 1.8, -2.6)
-    const rimB = new THREE.DirectionalLight(0xff2bd6, 0.9)
-    rimB.position.set(-2.2, 2.2, -2.4)
-    this.scene.add(key, fill, rimA, rimB)
+    this.scene.environmentIntensity = 0.7
+    this.scene.add(new THREE.HemisphereLight(0xffffff, 0xd9d4cc, 1.0))
+    const key = new THREE.DirectionalLight(0xfff8f0, 2.2)
+    key.position.set(1.8, 3.4, 3.2)
+    const fill = new THREE.DirectionalLight(0xeef3ff, 0.8)
+    fill.position.set(-2.6, 1.4, 2.0)
+    const back = new THREE.DirectionalLight(0xffffff, 0.9)
+    back.position.set(0, 2.4, -3)
+    this.scene.add(key, fill, back)
 
-    // Holographic floor
-    const grid = new THREE.PolarGridHelper(0.9, 12, 6, 64, 0x00f0ff, 0x1d3b66)
-    ;(grid.material as THREE.Material).transparent = true
-    ;(grid.material as THREE.Material).opacity = 0.35
-    this.scene.add(grid)
-    const ring = new THREE.Mesh(new THREE.RingGeometry(0.42, 0.44, 96), new THREE.MeshBasicMaterial({ color: 0xff2bd6, transparent: true, opacity: 0.6, side: THREE.DoubleSide }))
-    ring.rotation.x = -Math.PI / 2
-    ring.position.y = 0.001
-    this.scene.add(ring)
+    // Soft contact shadow under the feet
+    const c = document.createElement('canvas')
+    c.width = c.height = 128
+    const g = c.getContext('2d')!
+    const grad = g.createRadialGradient(64, 64, 0, 64, 64, 64)
+    grad.addColorStop(0, 'rgba(30,30,40,0.28)')
+    grad.addColorStop(1, 'rgba(30,30,40,0)')
+    g.fillStyle = grad
+    g.fillRect(0, 0, 128, 128)
+    const shadow = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 0.55), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c), transparent: true, depthWrite: false }))
+    shadow.rotation.x = -Math.PI / 2
+    shadow.position.y = 0.001
+    this.scene.add(shadow)
 
     this.camera.position.set(0, 1.0, 3.7)
     this.controls = new OrbitControls(this.camera, this.renderer.domElement)

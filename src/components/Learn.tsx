@@ -61,7 +61,7 @@ export function TermList({ terms, title }: { terms: string[]; title: string }) {
   return (
     <details className="learn">
       <summary>
-        <span className="learn-tag">STUDY</span> {title}
+        <span className="learn-tag">Study note</span>{title}
       </summary>
       <dl className="terms">
         {terms.map((t) => (
@@ -79,7 +79,7 @@ export function HowToReadConfig() {
   return (
     <details className="learn">
       <summary>
-        <span className="learn-tag">STUDY</span> How to read an electron configuration
+        <span className="learn-tag">Study note</span>How to read an electron configuration
       </summary>
       <div className="learn-body">
         <p>
@@ -104,7 +104,7 @@ export function HowToReadIntake() {
   return (
     <details className="learn">
       <summary>
-        <span className="learn-tag">STUDY</span> What RDA, AI and UL mean
+        <span className="learn-tag">Study note</span>What RDA, AI and UL mean
       </summary>
       <TermListInline terms={['RDA', 'AI', 'UL', 'Bioavailability']} />
     </details>

@@ -1,6 +1,6 @@
 # MedPeriodic
 
-An interactive, cyberpunk-styled study tool that connects human anatomy to the periodic table. Explore a real 3D model of the body (2,237 individually selectable pieces from BodyParts3D) along with every bone, major muscle, cell type, organ, vessel, nerve and skin and hair structure, and see which elements of the periodic table are found in each one. For every element you get its electron configuration, features, deficiency signs, who usually runs low, and how to get more of it, plus its links to vitamins.
+An interactive study tool that connects human anatomy to the periodic table. Explore a real 3D model of the body (2,237 individually selectable pieces from BodyParts3D) along with every bone, major muscle, cell type, organ, vessel, nerve and skin and hair structure, and see which elements of the periodic table are found in each one. For every element you get its electron configuration, features, deficiency signs, who usually runs low, and how to get more of it, plus its links to vitamins.
 
 > Educational reference, not medical advice. Intake values follow the US National Academies / NIH Office of Dietary Supplements (adults 19–50).
 

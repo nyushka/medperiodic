@@ -1,20 +1,11 @@
+import { useState } from 'react'
 import { VITAMIN_BY_ID } from '../data/vitamins'
 import { BY_SYMBOL } from '../data/periodic'
-import { elementColor } from './ElementPanel'
+import { elementColor, List } from './ElementPanel'
 
 interface Props {
   id: string
   onElement: (s: string) => void
-}
-
-function List({ items, tone }: { items: string[]; tone?: string }) {
-  return (
-    <ul className={`blist ${tone ?? ''}`}>
-      {items.map((t, i) => (
-        <li key={i}>{t}</li>
-      ))}
-    </ul>
-  )
 }
 
 export function ElementChip({ symbol, onClick, note }: { symbol: string; onClick: () => void; note?: string }) {
@@ -28,72 +19,110 @@ export function ElementChip({ symbol, onClick, note }: { symbol: string; onClick
   )
 }
 
+type Tab = 'overview' | 'health' | 'food'
+
 export default function VitaminPanel({ id, onElement }: Props) {
   const v = VITAMIN_BY_ID[id]
+  const [tab, setTab] = useState<Tab>('overview')
   return (
     <article className="vit-panel" style={{ '--el': v.color } as React.CSSProperties}>
       <header className="el-head">
         <div className="vit-badge">
           <span>{v.id}</span>
-          <small>{v.solubility}-soluble</small>
         </div>
         <div className="el-head-txt">
+          <p className="eyebrow">
+            {v.solubility === 'fat' ? 'Fat-soluble' : 'Water-soluble'} vitamin · <span className="mono">{v.formula}</span>
+          </p>
           <h2>{v.name}</h2>
-          <div className="chem">{v.chem}</div>
-          <div className="formula">{v.formula}</div>
+          <p className="chem">{v.chem}</p>
           <p className="lede">{v.summary}</p>
         </div>
       </header>
 
-      <section className="card">
-        <h3>Elements in its molecule</h3>
-        <div className="chip-row">
-          {v.elements.map((s) => (
-            <ElementChip key={s} symbol={s} onClick={() => onElement(s)} />
-          ))}
+      <dl className="keyfigs">
+        <div className="wide"><dt>Daily need</dt><dd>{v.rda}</dd></div>
+        {v.ul && <div><dt>Upper limit</dt><dd>{v.ul}</dd></div>}
+        <div className="wide"><dt>Deficiency disease</dt><dd>{v.disease}</dd></div>
+      </dl>
+
+      <nav className="tabbar" role="tablist" aria-label={`${v.name} sections`}>
+        {([['overview', 'Overview'], ['health', 'Health'], ['food', 'Food & minerals']] as [Tab, string][]).map(([t, label]) => (
+          <button key={t} role="tab" aria-selected={tab === t} className={tab === t ? 'on' : ''} onClick={() => setTab(t)}>
+            {label}
+          </button>
+        ))}
+      </nav>
+
+      {tab === 'overview' && (
+        <div className="tabpane">
+          <section className="block">
+            <h3>What it does</h3>
+            <List items={v.functions} />
+          </section>
+          <section className="block">
+            <h3>Elements in the molecule</h3>
+            <div className="chip-row">
+              {v.elements.map((s) => (
+                <ElementChip key={s} symbol={s} onClick={() => onElement(s)} />
+              ))}
+            </div>
+          </section>
         </div>
-      </section>
+      )}
 
-      <section className="stat-row">
-        <div className="stat"><span className="v small">{v.rda}</span><span className="k">daily need (adults)</span></div>
-        {v.ul && <div className="stat warn"><span className="v small">{v.ul}</span><span className="k">upper limit</span></div>}
-        <div className="stat def"><span className="v small">{v.disease}</span><span className="k">deficiency disease</span></div>
-      </section>
-
-      <div className="grid2">
-        <section className="card"><h3>What it does</h3><List items={v.functions} /></section>
-        <section className="card tone-def"><h3>Deficiency signs</h3><List items={v.deficiency} tone="def" /></section>
-        <section className="card tone-risk"><h3>Who usually runs low</h3><List items={v.atRisk} tone="risk" /></section>
-        <section className="card tone-ex"><h3>Too much</h3><List items={v.excess} tone="ex" /></section>
-      </div>
-
-      <section className="card">
-        <h3>Best food sources</h3>
-        <div className="foods">
-          {v.sources.map(([f, a], i) => (
-            <div key={i} className="food"><span className="f">{f}</span><span className="a">{a}</span></div>
-          ))}
+      {tab === 'health' && (
+        <div className="tabpane">
+          <section className="block">
+            <h3><i className="dot def" />Signs of deficiency</h3>
+            <List items={v.deficiency} tone="def" />
+          </section>
+          <section className="block">
+            <h3><i className="dot risk" />Who usually runs low</h3>
+            <List items={v.atRisk} tone="risk" max={4} />
+          </section>
+          <section className="block">
+            <h3><i className="dot ex" />Too much</h3>
+            <List items={v.excess} tone="ex" />
+          </section>
         </div>
-      </section>
+      )}
 
-      <section className="card tone-boost">
-        <h3>How to get more</h3>
-        <List items={v.boost} tone="boost" />
-      </section>
-
-      <section className="card">
-        <h3>Mineral partners</h3>
-        <div className="where-list">
-          {v.minerals.map(([s, why]) => (
-            <button key={s} className="where el" onClick={() => onElement(s)} style={{ '--c': elementColor(s) } as React.CSSProperties}>
-              <strong>
-                <span className="mini-sym">{s}</span> {BY_SYMBOL[s].name}
-              </strong>
-              <small>{why}</small>
-            </button>
-          ))}
+      {tab === 'food' && (
+        <div className="tabpane">
+          <section className="block">
+            <h3>Best food sources</h3>
+            <table className="foods">
+              <tbody>
+                {v.sources.map(([f, a], i) => (
+                  <tr key={i}>
+                    <td>{f}</td>
+                    <td>{a}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
+          <section className="block">
+            <h3><i className="dot boost" />How to get more</h3>
+            <List items={v.boost} tone="boost" />
+          </section>
+          <section className="block">
+            <h3>Mineral partners</h3>
+            <div className="link-list">
+              {v.minerals.map(([s, why]) => (
+                <button key={s} className="link-row" onClick={() => onElement(s)}>
+                  <span className="vb sym" style={{ '--c': elementColor(s) } as React.CSSProperties}>{s}</span>
+                  <span>
+                    <strong>{BY_SYMBOL[s].name}</strong>
+                    <small>{why}</small>
+                  </span>
+                </button>
+              ))}
+            </div>
+          </section>
         </div>
-      </section>
+      )}
     </article>
   )
 }

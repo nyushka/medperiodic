@@ -6,11 +6,11 @@ import { AnatomyScene, type ViewPreset } from '../lib/scene'
 
 export const LAYER_INFO: { id: LayerId; label: string; color: string }[] = [
   { id: 'muscles', label: 'Muscles', color: '#d2443c' },
-  { id: 'skeleton', label: 'Skeleton', color: '#e7dabf' },
+  { id: 'skeleton', label: 'Skeleton', color: '#cdbb94' },
   { id: 'organs', label: 'Organs', color: '#e8947c' },
-  { id: 'nervous', label: 'Brain & nerves', color: '#f2c94c' },
-  { id: 'arteries', label: 'Arteries', color: '#ff3346' },
-  { id: 'veins', label: 'Veins', color: '#4a6dff' },
+  { id: 'nervous', label: 'Brain & nerves', color: '#d9ad2b' },
+  { id: 'arteries', label: 'Arteries', color: '#c8283a' },
+  { id: 'veins', label: 'Veins', color: '#3557c8' },
   { id: 'skin', label: 'Skin', color: '#d8a183' },
 ]
 
@@ -66,7 +66,7 @@ export default function Viewer3D({ highlight, focusKey, calloutLabel, onPick, on
   const [counts, setCounts] = useState<Partial<Record<LayerId, number>>>({})
   const [hover, setHover] = useState<{ name: string; x: number; y: number } | null>(null)
   const [explode, setExplode] = useState(0)
-  const [labelsOn, setLabelsOn] = useState(true)
+  const [labelsOn, setLabelsOn] = useState(false)
   const [isolated, setIsolated] = useState(false)
   const [panelOpen, setPanelOpen] = useState(() => typeof window === 'undefined' || window.innerWidth > 700)
   const panelOpenRef = useRef(panelOpen)
@@ -284,15 +284,8 @@ export default function Viewer3D({ highlight, focusKey, calloutLabel, onPick, on
             </g>
           ))}
         </svg>
-        <div className="hud hud-tl" />
-        <div className="hud hud-tr" />
-        <div className="hud hud-bl" />
-        <div className="hud hud-br" />
 
-        <div className="scan-readout">
-          <span className="scan-tag">BP3D // ADULT MALE<span className="wide-only"> REFERENCE</span> · {progress.of ? `${(2331218).toLocaleString()} TRIS` : 'INITIALISING'}</span>
-          <span className="hint">Drag to rotate · scroll or pinch to zoom · right-drag to pan · tap a structure</span>
-        </div>
+        <p className="hint-line">Drag to rotate · scroll to zoom · right-drag to pan · click any structure</p>
 
         {hover && (
           <div className="tip" style={{ left: hover.x + 14, top: hover.y + 14 }}>
@@ -307,7 +300,7 @@ export default function Viewer3D({ highlight, focusKey, calloutLabel, onPick, on
             ) : (
               <>
                 <div className="loader-txt">
-                  Loading anatomy · {(progress.loaded / 1e6).toFixed(1)} / {(progress.total / 1e6).toFixed(1)} MB · {progress.chunks}/{progress.of || '…'} packs
+                  Loading 3D anatomy · {(progress.loaded / 1e6).toFixed(1)} of {(progress.total / 1e6).toFixed(1)} MB
                 </div>
                 <div className="bar"><i style={{ width: `${pct}%` }} /></div>
               </>
@@ -317,7 +310,7 @@ export default function Viewer3D({ highlight, focusKey, calloutLabel, onPick, on
 
         <aside ref={panelEl} className={`systems ${panelOpen ? '' : 'closed'}`} aria-label="Body systems">
           <button className="systems-toggle" onClick={() => setPanelOpen((o) => !o)} aria-expanded={panelOpen}>
-            {panelOpen ? 'Body systems ◂' : 'Systems ▸'}
+            {panelOpen ? 'Layers' : 'Layers'}<span aria-hidden="true">{panelOpen ? '−' : '+'}</span>
           </button>
           {panelOpen && (
             <div className="systems-list">
@@ -349,7 +342,7 @@ export default function Viewer3D({ highlight, focusKey, calloutLabel, onPick, on
                 <input id="explode" type="range" min={0} max={1} step={0.02} value={explode} onChange={(e) => setExplode(+e.target.value)} aria-label="Exploded view" />
               </div>
               <label className="check">
-                <input id="labels" type="checkbox" checked={labelsOn} onChange={(e) => setLabelsOn(e.target.checked)} /> Textbook labels
+                <input id="labels" type="checkbox" checked={labelsOn} onChange={(e) => setLabelsOn(e.target.checked)} />Labels
               </label>
             </div>
           )}
@@ -390,9 +383,7 @@ export default function Viewer3D({ highlight, focusKey, calloutLabel, onPick, on
           </button>
         ))}
       </div>
-      <p className="credit">
-        3D anatomy: BodyParts3D © The Database Center for Life Science, CC BY 4.0, via Human Atlas (@dagno/anatomy-model) and open-anatomy-3d (lungs, liver). Repacked and recolored by MedPeriodic.
-      </p>
+      <p className="credit">3D model: BodyParts3D © DBCLS, CC BY 4.0, via Human Atlas and open-anatomy-3d.</p>
     </div>
   )
 }

@@ -31,11 +31,11 @@ export interface BodyElement {
 }
 
 export const ROLE_INFO: Record<BodyRole, { label: string; color: string; blurb: string }> = {
-  bulk: { label: 'Bulk element', color: '#5ec8ff', blurb: 'Makes up the water, proteins, fats, carbohydrates and DNA of every cell — about 96% of body mass.' },
-  major: { label: 'Major mineral', color: '#3ee08f', blurb: 'Needed in amounts above 100 mg/day. Builds bone and runs every nerve and muscle signal.' },
-  trace: { label: 'Essential trace element', color: '#ffb02e', blurb: 'Needed in milligram or microgram amounts, usually as the working part of an enzyme or hormone.' },
-  ultratrace: { label: 'Ultratrace / possibly essential', color: '#c08bff', blurb: 'Present in tiny amounts. Some have proven roles, others are still being studied.' },
-  toxic: { label: 'Toxic contaminant', color: '#ff5277', blurb: 'No known function. It accumulates from the environment and can cause harm.' },
+  bulk: { label: 'Bulk element', color: '#3c7fc0', blurb: 'Makes up the water, proteins, fats, carbohydrates and DNA of every cell — about 96% of body mass.' },
+  major: { label: 'Major mineral', color: '#2e9466', blurb: 'Needed in amounts above 100 mg/day. Builds bone and runs every nerve and muscle signal.' },
+  trace: { label: 'Essential trace element', color: '#c98418', blurb: 'Needed in milligram or microgram amounts, usually as the working part of an enzyme or hormone.' },
+  ultratrace: { label: 'Ultratrace / possibly essential', color: '#8662c4', blurb: 'Present in tiny amounts. Some have proven roles, others are still being studied.' },
+  toxic: { label: 'Toxic contaminant', color: '#c4424a', blurb: 'No known function. It accumulates from the environment and can cause harm.' },
 }
 
 export const BODY_ELEMENTS: BodyElement[] = [

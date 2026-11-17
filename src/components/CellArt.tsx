@@ -145,7 +145,7 @@ export default function CellArt({ shape, color }: { shape: CellShape; color: str
   })()
   return (
     <svg viewBox="0 0 120 120" className="cell-art" role="img" aria-label={`Illustration: ${shape} cell`}>
-      <circle cx="60" cy="60" r="58" fill="#0d0f24" stroke="#30356b" />
+      <circle cx="60" cy="60" r="58" fill="#f6f7f9" stroke="#e3e5ea" />
       <g className="cell-float">{body}</g>
     </svg>
   )

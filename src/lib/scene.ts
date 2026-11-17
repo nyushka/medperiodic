@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
 import { acceleratedRaycast, computeBoundsTree, disposeBoundsTree } from 'three-mesh-bvh'
+import { SmoothZoom } from './smoothZoom'
 import type { LayerId, PartMeta } from './meshMatch'
 
 THREE.BufferGeometry.prototype.computeBoundsTree = computeBoundsTree
@@ -101,6 +102,8 @@ export class AnatomyScene {
   private hoverQueued = false
   private lastMove = { x: 0, y: 0 }
   private disposed = false
+  private zoom!: SmoothZoom
+  private lastFrame = performance.now()
   private dirty = true
 
   /** Request a redraw on the next frame (the scene renders on demand). */
@@ -157,6 +160,7 @@ export class AnatomyScene {
     this.controls.maxDistance = 7
     this.controls.screenSpacePanning = true
     this.controls.update()
+    this.zoom = new SmoothZoom(this.camera, this.controls, this.renderer.domElement)
 
     const el = this.renderer.domElement
     el.style.touchAction = 'none'
@@ -300,6 +304,7 @@ export class AnatomyScene {
 
   // ---------- camera ----------
   private flyTo(target: THREE.Vector3, pos: THREE.Vector3, dur = 650) {
+    this.zoom?.cancel()
     this.tween = { t0: performance.now(), dur, fromPos: this.camera.position.clone(), toPos: pos, fromTarget: this.controls.target.clone(), toTarget: target }
   }
 
@@ -441,6 +446,10 @@ export class AnatomyScene {
   private loop = () => {
     if (this.disposed) return
     this.raf = requestAnimationFrame(this.loop)
+    const now = performance.now()
+    const dt = (now - this.lastFrame) / 1000
+    this.lastFrame = now
+    const zooming = this.zoom.update(dt)
     if (this.tween) {
       const k = Math.min(1, (performance.now() - this.tween.t0) / this.tween.dur)
       const e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2
@@ -452,7 +461,7 @@ export class AnatomyScene {
       }
     }
     const moved = this.controls.update()
-    if (!moved && !this.dirty && !this.tween) return
+    if (!moved && !zooming && !this.dirty && !this.tween) return
     this.dirty = false
     this.renderer.render(this.scene, this.camera)
     this.cb.onFrame?.()
@@ -462,6 +471,7 @@ export class AnatomyScene {
     this.disposed = true
     cancelAnimationFrame(this.raf)
     this.ro.disconnect()
+    this.zoom.dispose()
     this.controls.dispose()
     for (const m of this.meshes.values()) {
       m.geometry.disposeBoundsTree?.()

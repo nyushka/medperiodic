@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
+import { SmoothZoom } from './smoothZoom'
 
 function light(scene: THREE.Scene, renderer: THREE.WebGLRenderer) {
   const pmrem = new THREE.PMREMGenerator(renderer)
@@ -44,6 +45,8 @@ export function createStudio(host: HTMLElement, opts: { autoRotate?: boolean } =
   controls.autoRotateSpeed = 1.1
   controls.minDistance = 1
   controls.maxDistance = 12
+  const zoom = new SmoothZoom(camera, controls, renderer.domElement)
+  let last = performance.now()
   let current: THREE.Object3D | null = null
   const ticks: ((t: number) => void)[] = []
   let visible = true
@@ -67,6 +70,8 @@ export function createStudio(host: HTMLElement, opts: { autoRotate?: boolean } =
     raf = requestAnimationFrame(loop)
     if (!visible || document.hidden) return
     if (!reduce) for (const fn of ticks) fn(t / 1000)
+    zoom.update((t - last) / 1000)
+    last = t
     controls.update()
     renderer.render(scene, camera)
   }
@@ -87,6 +92,7 @@ export function createStudio(host: HTMLElement, opts: { autoRotate?: boolean } =
       controls.target.copy(sphere.center)
       const d = dist ?? (sphere.radius / Math.sin((camera.fov * Math.PI) / 360)) * 0.82
       camera.position.copy(sphere.center).add(new THREE.Vector3(0, d * 0.18, d))
+      zoom.cancel()
       controls.update()
     },
     onTick(fn) {
@@ -97,6 +103,7 @@ export function createStudio(host: HTMLElement, opts: { autoRotate?: boolean } =
       io.disconnect()
       ro.disconnect()
       renderer.domElement.removeEventListener('pointerdown', stopAuto)
+      zoom.dispose()
       controls.dispose()
       if (current) disposeTree(current)
       renderer.dispose()

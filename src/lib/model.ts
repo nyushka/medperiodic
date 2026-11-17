@@ -16,16 +16,25 @@ export async function loadIndex(): Promise<ModelIndex> {
   return r.json()
 }
 
-async function gunzip(res: Response, onBytes: (n: number) => void): Promise<ArrayBuffer> {
+function fromBase64(text: string): Uint8Array {
+  const bin = atob(text.replace(/\s+/g, ''))
+  const out = new Uint8Array(bin.length)
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i)
+  return out
+}
+
+async function gunzip(res: Response, onBytes: (n: number) => void, base64: boolean): Promise<ArrayBuffer> {
   const reader = res.body!.getReader()
   const parts: Uint8Array[] = []
   for (;;) {
     const { done, value } = await reader.read()
     if (done) break
     parts.push(value)
-    onBytes(value.length)
+    onBytes(base64 ? value.length * 0.75 : value.length)
   }
-  const blob = new Blob(parts as BlobPart[])
+  let blob = new Blob(parts as BlobPart[])
+  // Hosts that only serve text get the packs as base64 (.txt).
+  if (base64) blob = new Blob([fromBase64(await blob.text()) as BlobPart])
   if (typeof DecompressionStream === 'undefined') throw new Error('This browser cannot decompress the model (DecompressionStream is missing). Try a current Chrome, Edge, Firefox or Safari.')
   // Some servers already decoded the gzip transfer; detect the gzip magic number first.
   const head = new Uint8Array(await blob.slice(0, 2).arrayBuffer())
@@ -38,7 +47,7 @@ export async function loadChunk(index: ModelIndex, chunk: number, onBytes: (n: n
   const c = index.chunks[chunk]
   const res = await fetch(MODEL_BASE + c.file)
   if (!res.ok) throw new Error(`Could not load ${c.file} (HTTP ${res.status}).`)
-  const buf = await gunzip(res, onBytes)
+  const buf = await gunzip(res, onBytes, c.file.endsWith('.txt'))
   const out = new Map<string, THREE.BufferGeometry>()
   for (const p of index.parts) {
     if (p.c !== chunk) continue

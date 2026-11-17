@@ -277,7 +277,17 @@ const R: Rule[] = [
   [/cephalic vein|basilic vein|median cubital/, 'cephalic'],
 ]
 
+const cache = new Map<string, string | null>()
+
 export function matchStructure(name: string): string | null {
+  const hit = cache.get(name)
+  if (hit !== undefined) return hit
+  const r = matchUncached(name)
+  cache.set(name, r)
+  return r
+}
+
+function matchUncached(name: string): string | null {
   const c = clean(name)
   for (const [re, id] of R) {
     const m = c.match(re)

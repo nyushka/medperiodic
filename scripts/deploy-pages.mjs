@@ -21,7 +21,8 @@ cpSync(dist, dir, { recursive: true })
 writeFileSync(join(dir, '.nojekyll'), '')
 sh('git add -A', dir)
 try {
-  sh('git commit -m "Deploy MedPeriodic to GitHub Pages"', dir)
+  writeFileSync(join(dir, '..', 'gh-pages-msg.txt'), process.env.DEPLOY_MESSAGE ?? 'Deploy MedPeriodic to GitHub Pages')
+  sh(`git commit -F ${join(dir, '..', 'gh-pages-msg.txt')}`, dir)
 } catch {
   console.log('Nothing changed.')
 }

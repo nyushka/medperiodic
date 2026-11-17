@@ -7,9 +7,11 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "build:model": "node scripts/build-model.mjs",
+    "deploy": "npm run build && node scripts/deploy-pages.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
+    "fflate": "0.8.3",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "three": "0.186.1",

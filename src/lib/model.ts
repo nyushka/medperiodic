@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+import { gunzipSync } from 'fflate'
 import type { LayerId, PartMeta } from './meshMatch'
 
 export interface ModelIndex {
@@ -35,10 +36,14 @@ async function gunzip(res: Response, onBytes: (n: number) => void, base64: boole
   let blob = new Blob(parts as BlobPart[])
   // Hosts that only serve text get the packs as base64 (.txt).
   if (base64) blob = new Blob([fromBase64(await blob.text()) as BlobPart])
-  if (typeof DecompressionStream === 'undefined') throw new Error('This browser cannot decompress the model (DecompressionStream is missing). Try a current Chrome, Edge, Firefox or Safari.')
   // Some servers already decoded the gzip transfer; detect the gzip magic number first.
   const head = new Uint8Array(await blob.slice(0, 2).arrayBuffer())
   if (head[0] !== 0x1f || head[1] !== 0x8b) return blob.arrayBuffer()
+  // Older browsers (e.g. Safari before 16.4) lack DecompressionStream: fall back to a JavaScript inflater.
+  if (typeof DecompressionStream === 'undefined') {
+    const out = gunzipSync(new Uint8Array(await blob.arrayBuffer()))
+    return out.buffer.slice(out.byteOffset, out.byteOffset + out.byteLength) as ArrayBuffer
+  }
   return new Response(blob.stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer()
 }
 

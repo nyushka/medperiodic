@@ -54,11 +54,12 @@ interface Props {
   focusKey: number
   resetKey: number
   calloutLabel: string | null
+  extra?: React.ReactNode
   onPick: (meta: PartMeta | null) => void
   onIndex: (index: ModelIndex, byStruct: Map<string, string[]>) => void
 }
 
-export default function Viewer3D({ highlight, focusKey, resetKey, calloutLabel, onPick, onIndex }: Props) {
+export default function Viewer3D({ highlight, focusKey, resetKey, calloutLabel, extra, onPick, onIndex }: Props) {
   const host = useRef<HTMLDivElement>(null)
   const sceneRef = useRef<AnatomyScene | null>(null)
   const [layers, setLayers] = useState<LayerState>(() => ({ ...ALL_OFF(), muscles: { visible: true, opacity: 1 }, skeleton: { visible: true, opacity: 1 } }))
@@ -288,6 +289,7 @@ export default function Viewer3D({ highlight, focusKey, resetKey, calloutLabel, 
             </button>
           ))}
         </div>
+        {extra}
       </div>
       <div className="viewer-stage">
         <div className="gl-host" ref={host} />

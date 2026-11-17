@@ -34,6 +34,17 @@ export default function App() {
   const [stack, setStack] = useState<DrawerItem[]>([])
   const [side, setSide] = useState<'detail' | 'index'>('detail')
   const [extra, setExtra] = useState<Structure[]>([])
+  const [sideW, setSideW] = useState(() => {
+    try {
+      const v = Number(localStorage.getItem('mp-side-w'))
+      return v >= 260 ? v : 420
+    } catch {
+      return 420
+    }
+  })
+  const [detailsOpen, setDetailsOpen] = useState(true)
+  const [full, setFull] = useState(false)
+  const explorerRef = useRef<HTMLDivElement>(null)
   const byStruct = useRef<Map<string, string[]>>(new Map())
   const metaById = useRef<Map<string, PartMeta>>(new Map())
   const drawerRef = useRef<HTMLDivElement>(null)
@@ -109,10 +120,80 @@ export default function App() {
   const top = stack[stack.length - 1]
 
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setStack((s) => s.slice(0, -1))
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return
+      setStack((s) => {
+        if (s.length) return s.slice(0, -1)
+        setFull(false)
+        return s
+      })
+    }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [])
+
+  // Full screen: use the browser's Fullscreen API when allowed, and always expand the explorer to fill the window.
+  useEffect(() => {
+    const onChange = () => {
+      if (!document.fullscreenElement) setFull(false)
+    }
+    document.addEventListener('fullscreenchange', onChange)
+    return () => document.removeEventListener('fullscreenchange', onChange)
+  }, [])
+  useEffect(() => {
+    document.body.classList.toggle('is-full', full)
+    if (full && !document.fullscreenElement) document.documentElement.requestFullscreen?.().catch(() => {})
+    if (!full && document.fullscreenElement) document.exitFullscreen?.().catch(() => {})
+  }, [full])
+
+  const startResize = (e: React.PointerEvent) => {
+    e.preventDefault()
+    const box = explorerRef.current?.getBoundingClientRect()
+    if (!box) return
+    const el = e.currentTarget as HTMLElement
+    el.setPointerCapture(e.pointerId)
+    const move = (ev: PointerEvent) => {
+      const w = Math.round(box.right - ev.clientX)
+      if (w < 200) {
+        setDetailsOpen(false)
+        return
+      }
+      setDetailsOpen(true)
+      setSideW(Math.min(Math.max(w, 280), box.width * 0.7))
+    }
+    const up = () => {
+      el.removeEventListener('pointermove', move)
+      el.removeEventListener('pointerup', up)
+      setSideW((w) => {
+        try {
+          localStorage.setItem('mp-side-w', String(Math.round(w)))
+        } catch {
+          /* storage unavailable */
+        }
+        return w
+      })
+    }
+    el.addEventListener('pointermove', move)
+    el.addEventListener('pointerup', up)
+  }
+  const nudge = (e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowLeft') setSideW((w) => Math.min(w + 40, 1100))
+    if (e.key === 'ArrowRight') setSideW((w) => Math.max(w - 40, 280))
+  }
+
+  const layoutTools = (
+    <div className="layout-tools">
+      <button onClick={() => setDetailsOpen((o) => !o)} aria-pressed={!detailsOpen} title={detailsOpen ? 'Hide the details column' : 'Show the details column'}>
+        {detailsOpen ? 'Hide details' : 'Show details'}
+      </button>
+      <button className="full-btn" onClick={() => setFull((f) => !f)} aria-pressed={full} title={full ? 'Exit full screen (Esc)' : 'Full screen'}>
+        <svg viewBox="0 0 16 16" aria-hidden="true">
+          {full ? <path d="M6 1v5H1M10 1v5h5M6 15v-5H1M10 15v-5h5" /> : <path d="M1 6V1h5M15 6V1h-5M1 10v5h5M15 10v5h-5" />}
+        </svg>
+        {full ? 'Exit full screen' : 'Full screen'}
+      </button>
+    </div>
+  )
 
   const callout = useMemo(() => getStructure(selectedId)?.name.replace(/\s*\(.*?\)/, '').replace(/ —.*$/, '') ?? null, [selectedId])
 
@@ -154,11 +235,30 @@ export default function App() {
       </header>
 
       <main>
-        <div className="explorer" hidden={view !== 'body'}>
+        <div
+          ref={explorerRef}
+          className={`explorer${full ? ' full' : ''}${detailsOpen ? '' : ' no-side'}`}
+          hidden={view !== 'body'}
+          style={{ '--side-w': `${sideW}px` } as React.CSSProperties}
+        >
           <Suspense fallback={<div className="viewer viewer-fallback">Starting 3D engine…</div>}>
-            <Viewer3D highlight={highlight} focusKey={focusKey} resetKey={resetKey} calloutLabel={callout} onPick={pick} onIndex={onIndex} />
+            <Viewer3D highlight={highlight} focusKey={focusKey} resetKey={resetKey} calloutLabel={callout} onPick={pick} onIndex={onIndex} extra={layoutTools} />
           </Suspense>
-          <div className="side">
+          {detailsOpen && (
+            <div
+              className="divider"
+              role="separator"
+              aria-orientation="vertical"
+              aria-label="Resize the details column (arrow keys work too)"
+              tabIndex={0}
+              onPointerDown={startResize}
+              onKeyDown={nudge}
+              onDoubleClick={() => setSideW(420)}
+            >
+              <i />
+            </div>
+          )}
+          <div className="side" hidden={!detailsOpen}>
             <div className="seg side-tabs">
               <button className={side === 'detail' ? 'on' : ''} onClick={() => setSide('detail')}>Details</button>
               <button className={side === 'index' ? 'on' : ''} onClick={() => setSide('index')}>Browse all parts</button>

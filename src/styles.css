@@ -61,7 +61,8 @@ main { flex: 1; padding-block: 18px; min-width: 0; }
 .seg button.on { color: var(--ink); background: var(--surface); border-color: var(--line-2); box-shadow: 0 1px 2px rgba(20, 24, 32, 0.06); }
 
 /* ---------- Explorer layout ---------- */
-.explorer { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(330px, 0.8fr); gap: 24px; align-items: start; }
+.explorer { display: grid; grid-template-columns: minmax(0, 1fr) 14px var(--side-w, 420px); gap: 6px; align-items: start; }
+.explorer.no-side { grid-template-columns: minmax(0, 1fr); }
 .side { min-width: 0; display: flex; flex-direction: column; gap: 12px; }
 .side-tabs { background: var(--surface-2); border: 1px solid var(--line); border-radius: 999px; padding: 3px; flex-wrap: nowrap; }
 .side-tabs button { flex: 1; }
@@ -74,7 +75,7 @@ main { flex: 1; padding-block: 18px; min-width: 0; }
 .gl-host { position: absolute; inset: 0; cursor: grab; }
 .gl-host:active { cursor: grabbing; }
 .gl-host canvas { display: block; }
-.hint-line { position: absolute; left: 0; right: 0; bottom: 12px; margin: 0; text-align: center; color: var(--faint); font-size: 0.76rem; pointer-events: none; z-index: 2; }
+.hint-line { position: absolute; left: 0; right: 0; top: 14px; margin: 0; text-align: center; color: var(--faint); font-size: 0.76rem; pointer-events: none; z-index: 2; }
 .labels { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; overflow: visible; }
 .callout path { fill: none; stroke: rgba(236, 238, 242, 0.5); stroke-width: 1; }
 .callout circle { fill: var(--ink); }
@@ -376,3 +377,33 @@ table.foods tr:last-child td { border-bottom: 0; }
 .orb-names b { color: var(--ink); font-weight: 500; }
 .atom-sec { grid-template-columns: minmax(260px, 340px) 1fr; }
 @media (max-width: 640px) { .atom3d-stage { height: 260px; } .atom-sec { grid-template-columns: minmax(0, 1fr); } }
+
+/* ---------- Adjustable layout ---------- */
+.viewer-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.layout-tools { display: flex; gap: 4px; flex-wrap: wrap; }
+.layout-tools button { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-size: 0.82rem; padding: 5px 11px; border-radius: 999px; }
+.layout-tools button:hover { border-color: var(--line-2); background: var(--surface-2); }
+.layout-tools svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.6; }
+.full-btn[aria-pressed='true'] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.divider { align-self: stretch; position: sticky; top: 84px; height: min(calc(100vh - 110px), 920px); display: flex; justify-content: center; cursor: col-resize; touch-action: none; border-radius: 6px; }
+.divider i { width: 3px; height: 100%; border-radius: 3px; background: var(--line); transition: background 0.15s, width 0.15s; }
+.divider:hover i, .divider:focus-visible i, .divider:active i { background: var(--accent); width: 4px; }
+.viewer-stage { resize: vertical; max-height: none; }
+
+/* Full screen: the explorer fills the whole window */
+body.is-full { overflow: hidden; }
+.explorer.full { position: fixed; inset: 0; z-index: 40; background: var(--bg); padding: calc(env(safe-area-inset-top, 0px) + 12px) max(12px, env(safe-area-inset-right, 0px)) calc(env(safe-area-inset-bottom, 0px) + 12px) max(12px, env(safe-area-inset-left, 0px)); align-items: stretch; height: 100%; grid-template-rows: minmax(0, 1fr); }
+.explorer.full .viewer { position: static; height: 100%; min-height: 0; }
+.explorer.full .viewer-stage { flex: 1; height: auto; min-height: 0; resize: none; }
+.explorer.full .divider { position: static; height: auto; }
+.explorer.full .side { height: 100%; min-height: 0; overflow: hidden; }
+.explorer.full .side-scroll { flex: 1; min-height: 0; overflow-y: auto; padding-right: 4px; }
+.explorer.full .credit { display: none; }
+@media (max-width: 1000px) {
+  .explorer, .explorer.full { grid-template-columns: minmax(0, 1fr); }
+  .divider { display: none; }
+  .explorer.full { overflow-y: auto; }
+  .explorer.full .viewer { height: auto; }
+  .explorer.full .viewer-stage { height: calc(100vh - 150px); flex: none; }
+  .explorer.full .side { height: auto; overflow: visible; }
+}

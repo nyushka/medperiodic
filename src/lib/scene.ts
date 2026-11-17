@@ -70,7 +70,7 @@ function colorFor(p: PartMeta): { color: string; opacity?: number; rough?: numbe
   }
 }
 
-const HIGHLIGHT = new THREE.Color('#2f6fed')
+const HIGHLIGHT = new THREE.Color('#5b93f0')
 const HOVER = new THREE.Color('#f2b33d')
 const BLACK = new THREE.Color(0)
 
@@ -139,7 +139,7 @@ export class AnatomyScene {
     c.width = c.height = 128
     const g = c.getContext('2d')!
     const grad = g.createRadialGradient(64, 64, 0, 64, 64, 64)
-    grad.addColorStop(0, 'rgba(30,30,40,0.28)')
+    grad.addColorStop(0, 'rgba(0,0,0,0.45)')
     grad.addColorStop(1, 'rgba(30,30,40,0)')
     g.fillStyle = grad
     g.fillRect(0, 0, 128, 128)

@@ -2,7 +2,11 @@ import { ALL, BY_ID, getStructure, related } from '../data'
 import { BODY_BY_SYMBOL, type BodyRole } from '../data/bodyElements'
 import { BY_SYMBOL } from '../data/periodic'
 import { elementsOf, KINDS, REGIONS, SYSTEMS, type Region } from '../data/types'
+import { lazy, Suspense } from 'react'
 import CellArt from './CellArt'
+
+const Cell3D = lazy(() => import('./Cell3D'))
+const CellThumb = lazy(() => import('./Cell3D').then((m) => ({ default: m.CellThumb })))
 import { elementColor } from './ElementPanel'
 import { KeyTerms } from './Learn'
 
@@ -54,8 +58,12 @@ export default function StructureDetail({ id, region, piece, pieceCount, onSelec
             </p>
             <h2>{s.name}</h2>
           </div>
-          {s.shape && <CellArt shape={s.shape} color={sys.color} />}
         </div>
+        {s.shape && (
+          <Suspense fallback={<CellArt shape={s.shape} color={sys.color} />}>
+            <Cell3D key={s.id} shape={s.shape} color={sys.color} label={s.name} />
+          </Suspense>
+        )}
         <p className="lede">{s.desc}</p>
         {piece && piece.toLowerCase() !== s.name.toLowerCase() && (
           <p className="piece-line">
@@ -111,7 +119,9 @@ export default function StructureDetail({ id, region, piece, pieceCount, onSelec
           <div className="cell-grid">
             {cells.map((c) => (
               <button key={c.id} className="cell-btn" onClick={() => onSelect(c.id)}>
-                <CellArt shape={c.shape ?? 'round'} color={SYSTEMS[c.system].color} />
+                <Suspense fallback={<span className="cell-thumb ph" />}>
+                  <CellThumb shape={c.shape ?? 'round'} color={SYSTEMS[c.system].color} alt="" />
+                </Suspense>
                 <span>{c.name}</span>
               </button>
             ))}

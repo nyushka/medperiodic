@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { lazy, Suspense, useState } from 'react'
 import { BODY_BY_SYMBOL, ROLE_INFO } from '../data/bodyElements'
 import { BY_SYMBOL, CATEGORY_COLORS } from '../data/periodic'
 import { VITAMIN_BY_ID, VITAMINS } from '../data/vitamins'
@@ -7,6 +7,8 @@ import { SYSTEMS } from '../data/types'
 import { BLOCK_OF, SHELL_NAMES, shellCounts, unpairedElectrons, valenceElectrons } from '../lib/electrons'
 import { Bohr, Configs, Orbitals } from './Atom'
 import { Fig, HowToReadConfig, HowToReadIntake } from './Learn'
+
+const Atom3D = lazy(() => import('./Atom3D'))
 
 interface Props {
   symbol: string
@@ -110,16 +112,22 @@ export default function ElementPanel({ symbol, onVitamin, onStructure }: Props) 
       {tab === 'atom' && (
         <div className="tabpane">
           <section className="atom-sec">
-            <figure className="bohr-fig">
-              <Bohr z={e.z} color={color} protons={e.z} neutrons={neutrons} symbol={e.symbol} />
-              <Fig n="1">Bohr model. Electrons per shell: {shellCounts(e.z).map((c, i) => `${SHELL_NAMES[i]} ${c}`).join(' · ')}</Fig>
-            </figure>
+            <Suspense
+              fallback={
+                <figure className="bohr-fig">
+                  <Bohr z={e.z} color={color} protons={e.z} neutrons={neutrons} symbol={e.symbol} />
+                </figure>
+              }
+            >
+              <Atom3D z={e.z} neutrons={neutrons} color={color} name={e.name} />
+            </Suspense>
             <div className="atom-info">
               <Configs z={e.z} />
+              <p className="note">Electrons per shell: {shellCounts(e.z).map((c, i) => `${SHELL_NAMES[i]} ${c}`).join(' · ')}</p>
               <div>
                 <div className="lbl">Valence orbitals</div>
                 <Orbitals z={e.z} valenceOnly />
-                <Fig n="2">Each box is one orbital; ↑↓ are paired electrons with opposite spin.</Fig>
+                <Fig n="1">Each box is one orbital; ↑↓ are paired electrons with opposite spin.</Fig>
               </div>
               <HowToReadConfig />
             </div>

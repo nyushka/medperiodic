@@ -1,0 +1,346 @@
+import { BY_ID } from '../data'
+import type { Kind, Region, Structure, System } from '../data/types'
+
+export interface PartMeta {
+  id: string
+  n: string // mesh name from BodyParts3D
+  s: string // source system
+  l: LayerId
+  c: number
+  o: number
+  v: number
+  i: number
+  w: 0 | 1
+  b: number[] // minx, miny, minz, maxx, maxy, maxz (metres, feet at y = 0, front = +z)
+}
+
+export type LayerId = 'skin' | 'skeleton' | 'muscles' | 'organs' | 'nervous' | 'arteries' | 'veins'
+
+const ORD = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth', 'tenth', 'eleventh', 'twelfth']
+const ord = (w: string) => ORD.indexOf(w) + 1
+
+const clean = (n: string) =>
+  n
+    .toLowerCase()
+    .replace(/\b(left|right)\b/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+
+// Ordered rules: the first match wins, so specific names come before general ones.
+type Rule = [RegExp, string | ((m: RegExpMatchArray) => string)]
+const R: Rule[] = [
+  // ---- vertebrae, ribs, numbered bones
+  [/^atlas$/, 'bone-c1'],
+  [/^axis$/, 'bone-c2'],
+  [/^(\w+) cervical vertebra$/, (m) => `bone-c${ord(m[1])}`],
+  [/^(\w+) thoracic vertebra$/, (m) => `bone-t${ord(m[1])}`],
+  [/^(\w+) lumbar vertebra$/, (m) => `bone-l${ord(m[1])}`],
+  [/intervertebral dis[ck]/, 'discs'],
+  [/^(\w+) costal cartilage$/, 'hyaline'],
+  [/^(\w+) rib$/, (m) => `bone-rib${ord(m[1])}`],
+  [/^(\w+) metacarpal bone$/, (m) => `bone-mc${ord(m[1])}`],
+  [/^(\w+) metatarsal bone$/, (m) => `bone-mt${ord(m[1])}`],
+  [/^proximal phalanx of .*(finger|thumb)/, 'bone-hand-prox'],
+  [/^middle phalanx of .*finger/, 'bone-hand-mid'],
+  [/^distal phalanx of .*(finger|thumb)/, 'bone-hand-dist'],
+  [/^proximal phalanx of .*toe/, 'bone-foot-prox'],
+  [/^middle phalanx of .*toe/, 'bone-foot-mid'],
+  [/^distal phalanx of .*toe/, 'bone-foot-dist'],
+  [/(incisor|canine|molar|premolar) tooth|gingiva/, 'teeth'],
+  [/sternum|manubrium|xiphoid/, 'bone-sternum'],
+  [/^(hip bone|coxal bone|ilium|ischium|pubis)$/, 'bone-hip'],
+  [/^medial cuneiform/, 'bone-cuneiform-m'],
+  [/^intermediate cuneiform/, 'bone-cuneiform-i'],
+  [/^lateral cuneiform/, 'bone-cuneiform-l'],
+  [/^triquetral/, 'bone-triquetrum'],
+  [/^(cuboid|navicular)( bone)?$/, (m) => `bone-${m[1]}`],
+  [/^inferior nasal concha$/, 'bone-concha'],
+  [/^(frontal|parietal|temporal|occipital|nasal|lacrimal|zygomatic|palatine|hyoid) bone$/, (m) => `bone-${m[1]}`],
+  [/^(sphenoid|ethmoid)( bone)?$/, (m) => `bone-${m[1]}`],
+  [/^(femur|tibia|fibula|patella|humerus|radius|ulna|clavicle|scapula|sacrum|coccyx|maxilla|mandible|vomer|malleus|incus|stapes|calcaneus|talus|scaphoid|lunate|pisiform|trapezium|trapezoid|capitate|hamate)$/, (m) => `bone-${m[1]}`],
+  [/thyroid cartilage|cricoid|arytenoid|corniculate|cuneiform cartilage|epiglottis|vocal|crico-?thyroid|conus elasticus/, 'larynx'],
+  // ---- eye muscles before other "rectus"/"oblique"
+  [/^superior rectus$/, 'muscle-sup-rectus'],
+  [/^inferior rectus$/, 'muscle-inf-rectus'],
+  [/^medial rectus$/, 'muscle-med-rectus'],
+  [/^lateral rectus$/, 'muscle-lat-rectus'],
+  [/^superior oblique$/, 'muscle-sup-oblique'],
+  [/^inferior oblique$/, 'muscle-inf-oblique'],
+  [/levator palpebrae/, 'muscle-lev-palpebrae'],
+  // ---- muscles (specific first)
+  [/biceps femoris/, 'muscle-biceps-femoris'],
+  [/biceps brachii/, 'muscle-biceps'],
+  [/triceps brachii/, 'muscle-triceps'],
+  [/deltoid/, 'muscle-deltoid'],
+  [/trapezius/, 'muscle-trapezius'],
+  [/pectoralis major/, 'muscle-pec-major'],
+  [/pectoralis minor/, 'muscle-pec-minor'],
+  [/serratus anterior/, 'muscle-serratus'],
+  [/latissimus dorsi/, 'muscle-lats'],
+  [/rhomboid major/, 'muscle-rhomboid-major'],
+  [/rhomboid minor/, 'muscle-rhomboid-minor'],
+  [/levator scapulae/, 'muscle-lev-scap'],
+  [/supraspinatus/, 'muscle-supraspinatus'],
+  [/infraspinatus/, 'muscle-infraspinatus'],
+  [/teres minor/, 'muscle-teres-minor'],
+  [/teres major/, 'muscle-teres-major'],
+  [/subscapularis/, 'muscle-subscapularis'],
+  [/sternocleidomastoid/, 'muscle-scm'],
+  [/scalenus/, 'muscle-scalenes'],
+  [/sternohyoid/, 'muscle-sternohyoid'],
+  [/omohyoid/, 'muscle-omohyoid'],
+  [/digastric/, 'muscle-digastric'],
+  [/mylohyoid/, 'muscle-mylohyoid'],
+  [/splenius capitis/, 'muscle-splenius'],
+  [/platysma/, 'muscle-platysma'],
+  [/^diaphragm$/, 'muscle-diaphragm'],
+  [/external oblique/, 'muscle-ext-oblique'],
+  [/internal oblique/, 'muscle-int-oblique'],
+  [/transversus abdominis/, 'muscle-transversus'],
+  [/rectus abdominis/, 'muscle-rectus-abd'],
+  [/pyramidalis/, 'muscle-pyramidalis'],
+  [/external intercostal/, 'muscle-ext-intercostal'],
+  [/(internal|innermost) intercostal/, 'muscle-int-intercostal'],
+  [/iliocostalis|longissimus|spinalis/, 'muscle-erector'],
+  [/multifidus/, 'muscle-multifidus'],
+  [/quadratus lumborum/, 'muscle-ql'],
+  [/coracobrachialis/, 'muscle-coracobrachialis'],
+  [/brachioradialis/, 'muscle-brachioradialis'],
+  [/brachialis/, 'muscle-brachialis'],
+  [/anconeus/, 'muscle-anconeus'],
+  [/pronator teres/, 'muscle-pronator-teres'],
+  [/pronator quadratus/, 'muscle-pronator-quad'],
+  [/supinator/, 'muscle-supinator'],
+  [/flexor carpi radialis/, 'muscle-fcr'],
+  [/palmaris longus/, 'muscle-palmaris'],
+  [/flexor carpi ulnaris/, 'muscle-fcu'],
+  [/flexor digitorum superficialis/, 'muscle-fds'],
+  [/flexor digitorum profundus/, 'muscle-fdp'],
+  [/flexor pollicis longus/, 'muscle-fpl'],
+  [/extensor carpi radialis longus/, 'muscle-ecrl'],
+  [/extensor carpi radialis brevis/, 'muscle-ecrb'],
+  [/extensor carpi ulnaris/, 'muscle-ecu'],
+  [/extensor pollicis longus/, 'muscle-epl'],
+  [/abductor pollicis longus/, 'muscle-apl'],
+  [/extensor indicis/, 'muscle-ei'],
+  [/abductor pollicis brevis/, 'muscle-apb'],
+  [/opponens pollicis/, 'muscle-opponens'],
+  [/flexor pollicis brevis/, 'muscle-fpb'],
+  [/adductor pollicis/, 'muscle-adductor-pollicis'],
+  [/abductor digiti minimi of hand/, 'muscle-adm-hand'],
+  [/lumbricals of hand/, 'muscle-lumbricals-hand'],
+  [/dorsal interossei of hand/, 'muscle-dorsal-interossei-h'],
+  [/palmar interossei/, 'muscle-palmar-interossei'],
+  [/gluteus maximus/, 'muscle-glute-max'],
+  [/gluteus medius/, 'muscle-glute-med'],
+  [/gluteus minimus/, 'muscle-glute-min'],
+  [/tensor fasciae latae/, 'muscle-tfl'],
+  [/piriformis/, 'muscle-piriformis'],
+  [/obturator internus/, 'muscle-obturator-int'],
+  [/quadratus femoris/, 'muscle-quadratus-femoris'],
+  [/psoas major|iliacus/, 'muscle-iliopsoas'],
+  [/sartorius/, 'muscle-sartorius'],
+  [/rectus femoris/, 'muscle-rectus-femoris'],
+  [/vastus lateralis/, 'muscle-vastus-lat'],
+  [/vastus medialis/, 'muscle-vastus-med'],
+  [/vastus intermedius/, 'muscle-vastus-int'],
+  [/adductor longus/, 'muscle-add-longus'],
+  [/adductor brevis/, 'muscle-add-brevis'],
+  [/adductor (magnus|minimus)/, 'muscle-add-magnus'],
+  [/gracilis/, 'muscle-gracilis'],
+  [/pectineus/, 'muscle-pectineus'],
+  [/semitendinosus/, 'muscle-semitendinosus'],
+  [/semimembranosus/, 'muscle-semimembranosus'],
+  [/tibialis anterior/, 'muscle-tib-ant'],
+  [/tibialis posterior/, 'muscle-tib-post'],
+  [/extensor digitorum longus/, 'muscle-edl'],
+  [/extensor hallucis longus/, 'muscle-ehl'],
+  [/fibularis longus/, 'muscle-fib-longus'],
+  [/fibularis brevis/, 'muscle-fib-brevis'],
+  [/gastrocnemius/, 'muscle-gastrocnemius'],
+  [/soleus/, 'muscle-soleus'],
+  [/plantaris/, 'muscle-plantaris'],
+  [/popliteus/, 'muscle-popliteus'],
+  [/flexor digitorum longus/, 'muscle-fdl'],
+  [/flexor hallucis longus/, 'muscle-fhl'],
+  [/extensor digitorum brevis/, 'muscle-edb'],
+  [/extensor digitorum$/, 'muscle-ed'],
+  [/abductor hallucis/, 'muscle-abd-hallucis'],
+  [/flexor digitorum brevis/, 'muscle-fdb'],
+  [/abductor digiti minimi of foot/, 'muscle-adm-foot'],
+  [/flexor accessorius|quadratus plantae/, 'muscle-quadratus-plantae'],
+  [/levator ani|iliococcygeus|pubococcygeus|puborectalis/, 'muscle-levator-ani'],
+  [/external anal sphincter/, 'muscle-ext-anal'],
+  [/genioglossus/, 'muscle-genioglossus'],
+  [/calcaneal tendon|tendon/, 'tendons'],
+  [/ligament|interosseous membrane|raphe|retinaculum/, 'ligaments'],
+  [/linea alba/, 'fascia'],
+  // ---- heart
+  [/valve|leaflet|cusp/, 'heart-valves'],
+  [/papillary muscle|wall of (atrium|ventricle)/, 'heart'],
+  // ---- brain & nerves
+  [/^cerebellum|tentorium cerebelli/, 'cerebellum'],
+  [/pons|medulla oblongata|midbrain|colliculus/, 'brainstem'],
+  [/hypothalamus|mammillary|tuber cinereum/, 'hypothalamus'],
+  [/hippocampus|fornix/, 'hippocampus'],
+  [/amygdala/, 'amygdala'],
+  [/thalamus|geniculate/, 'thalamus'],
+  [/pituitary/, 'pituitary'],
+  [/pineal/, 'pineal'],
+  [/ventricle$|aqueduct|central canal|interventricular foramen|choroid plexus/, 'csf'],
+  [/gyrus|lobe$|lobule|cerebral hemisphere|corpus callosum|insula|caudate nucleus|putamen|globus pallidus|internal capsule|commissure|septum of telencephalon|stria terminalis|lamina terminalis|habenula/, 'cerebrum'],
+  [/optic (nerve|chiasm|tract)/, 'cn-ii'],
+  [/oculomotor/, 'cn-iii'],
+  [/trochlear nerve/, 'cn-iv'],
+  [/trigeminal|ophthalmic nerve|maxillary nerve|mandibular nerve|frontal nerve|nasociliary|lacrimal nerve|ciliary|ethmoidal nerve|infratrochlear|supraorbital|supratrochlear/, 'cn-v'],
+  [/abducens/, 'cn-vi'],
+  [/facial nerve/, 'cn-vii'],
+  [/vestibulocochlear/, 'cn-viii'],
+  [/glossopharyngeal/, 'cn-ix'],
+  [/vagus/, 'cn-x'],
+  [/accessory nerve/, 'cn-xi'],
+  [/hypoglossal/, 'cn-xii'],
+  [/spinal cord/, 'spinal-cord'],
+  [/sciatic/, 'sciatic'],
+  [/femoral nerve/, 'femoral-n'],
+  [/tibial nerve/, 'tibial-n'],
+  [/(common )?(fibular|peroneal) nerve/, 'fibular-n'],
+  [/median nerve/, 'median'],
+  [/ulnar nerve/, 'ulnar'],
+  [/radial nerve/, 'radial-n'],
+  [/musculocutaneous/, 'musculocutaneous'],
+  [/axillary nerve/, 'axillary'],
+  [/phrenic/, 'phrenic'],
+  [/intercostal nerve/, 'intercostal-n'],
+  [/pudendal nerve/, 'pudendal'],
+  [/obturator nerve/, 'obturator-n'],
+  [/brachial plexus/, 'brachial-plexus'],
+  [/sympathetic/, 'sympathetic'],
+  // ---- organs
+  [/^(left |right )?lung$/, 'lungs'],
+  [/bronch/, 'bronchi'],
+  [/trachea/, 'trachea'],
+  [/nasal cartilage/, 'nose'],
+  [/liver|hepatic duct|biliary tree|common hepatic/, 'liver'],
+  [/gallbladder|cystic duct/, 'gallbladder'],
+  [/pancrea/, 'pancreas'],
+  [/stomach/, 'stomach'],
+  [/esophagus/, 'esophagus'],
+  [/duodenum/, 'duodenum'],
+  [/jejunum/, 'jejunum'],
+  [/ileum|ileocecal/, 'ileum'],
+  [/colon|taenia|mesocolon/, 'large-intestine'],
+  [/cecum/, 'cecum'],
+  [/appendix|mesoappendix/, 'appendix'],
+  [/rectum/, 'rectum'],
+  [/mesentery of small intestine/, 'small-intestine'],
+  [/tongue|hyoglossus|geniohyoid/, 'tongue'],
+  [/(submandibular|sublingual|parotid) gland/, 'salivary'],
+  [/kidney/, 'kidney'],
+  [/ureter/, 'ureter'],
+  [/urinary bladder/, 'bladder'],
+  [/urethra/, 'urethra'],
+  [/testis|epididymis/, 'testis'],
+  [/prostate/, 'prostate'],
+  [/adrenal/, 'adrenal'],
+  [/thyroid gland/, 'thyroid'],
+  [/thymus/, 'thymus'],
+  [/spleen/, 'spleen'],
+  [/cornea/, 'cornea'],
+  [/^lens$/, 'lens'],
+  [/retina/, 'retina'],
+  [/sclera|iris|choroid$|vitreous|anterior chamber|corona ciliaris|suspensory ligament of lens|lacrimal gland/, 'eye'],
+  [/hair|eyebrow/, 'hair-shaft'],
+  [/^skin$|^lip$/, 'skin'],
+  // ---- vessels
+  [/aorta/, 'aorta'],
+  [/coronary/, 'coronary'],
+  [/carotid/, 'carotid'],
+  [/vertebral artery/, 'vertebral-a'],
+  [/cerebral artery|basilar artery|communicating artery/, 'willis'],
+  [/subclavian/, 'subclavian'],
+  [/brachial artery/, 'brachial'],
+  [/^(radial|ulnar) artery$/, 'radial-a'],
+  [/renal (artery|vein)/, 'renal-a'],
+  [/mesenteric/, 'mesenteric'],
+  [/iliac (artery|vein)/, 'iliac'],
+  [/femoral (artery|vein)/, 'femoral-a'],
+  [/popliteal/, 'popliteal'],
+  [/dorsalis pedis|dorsal artery of foot/, 'dorsalis-pedis'],
+  [/pulmonary (trunk|artery)/, 'pulmonary-a'],
+  [/pulmonary vein/, 'pulmonary-v'],
+  [/superior vena cava/, 'svc'],
+  [/inferior vena cava/, 'ivc'],
+  [/jugular/, 'jugular'],
+  [/portal vein/, 'portal'],
+  [/great saphenous/, 'saphenous'],
+  [/cephalic vein|basilic vein|median cubital/, 'cephalic'],
+]
+
+export function matchStructure(name: string): string | null {
+  const c = clean(name)
+  for (const [re, id] of R) {
+    const m = c.match(re)
+    if (m) {
+      const sid = typeof id === 'string' ? id : id(m)
+      if (BY_ID[sid]) return sid
+    }
+  }
+  return null
+}
+
+const SYS: Record<string, System> = {
+  skeletal: 'skeletal', muscular: 'muscular', connective: 'muscular', arterial: 'cardiovascular', venous: 'cardiovascular', cardiac: 'cardiovascular',
+  nervous: 'nervous', digestive: 'digestive', respiratory: 'respiratory', urinary: 'urinary', reproductive: 'reproductive', endocrine: 'endocrine',
+  lymphatic: 'lymphatic', sensory: 'sensory', integumentary: 'integumentary',
+}
+
+export function regionOf(b: number[]): Region {
+  const x = Math.abs((b[0] + b[3]) / 2)
+  const y = (b[1] + b[4]) / 2
+  const z = (b[2] + b[5]) / 2
+  if (y > 1.5) return 'head'
+  if (y > 1.42 && x < 0.1) return 'neck'
+  if (x > 0.19 && y < 0.92) return 'hand'
+  if (x > 0.17 && y > 0.92) return 'arm'
+  if (z < -0.07 && y > 0.95 && y < 1.45) return 'back'
+  if (y > 1.15) return 'chest'
+  if (y > 0.98) return 'abdomen'
+  if (y > 0.8) return 'pelvis'
+  if (y > 0.1) return 'leg'
+  return 'foot'
+}
+
+/** A detail page for a model piece with no hand-written entry. */
+export function synthStructure(p: PartMeta): Structure {
+  const kind: Kind =
+    p.l === 'skeleton' ? (/cartilage|disk|gingiva/i.test(p.n) ? 'tissue' : 'bone')
+    : p.l === 'muscles' ? (/tendon|ligament|membrane|raphe|linea/i.test(p.n) ? 'tissue' : 'muscle')
+    : p.l === 'arteries' || p.l === 'veins' ? 'vessel'
+    : p.l === 'nervous' ? (/nerve|ganglion|plexus/i.test(p.n) ? 'nerve' : 'organ')
+    : p.l === 'skin' ? 'skin'
+    : 'organ'
+  const region = regionOf(p.b)
+  const side = /\bleft\b/i.test(p.n) ? 'left' : /\bright\b/i.test(p.n) ? 'right' : null
+  const size = Math.max(p.b[3] - p.b[0], p.b[4] - p.b[1], p.b[5] - p.b[2]) * 100
+  const what =
+    kind === 'vessel' ? (p.l === 'arteries' ? 'an artery carrying oxygen-rich blood away from the heart' : 'a vein returning blood toward the heart')
+    : kind === 'nerve' ? 'a nerve carrying electrical signals'
+    : kind === 'muscle' ? 'a skeletal muscle'
+    : kind === 'bone' ? 'a bone'
+    : kind === 'tissue' ? 'a connective or cartilage structure'
+    : 'a structure'
+  return {
+    id: `mesh-${p.id}`,
+    name: p.n.charAt(0).toUpperCase() + p.n.slice(1),
+    kind,
+    system: SYS[p.s] ?? 'muscular',
+    region,
+    desc: `${p.n.charAt(0).toUpperCase() + p.n.slice(1)} is ${what}${side ? ` on the body’s ${side} side` : ''}, part of the ${SYS[p.s] ?? p.s} system. It is one of the 2,237 individually modelled pieces of the BodyParts3D reference adult male.`,
+    facts: [
+      ['Model piece', p.id],
+      ['Largest dimension', `≈ ${size < 1 ? size.toFixed(1) : Math.round(size)} cm`],
+      ['Triangles', (p.i / 3).toLocaleString()],
+    ],
+  }
+}

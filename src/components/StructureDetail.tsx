@@ -1,4 +1,4 @@
-import { ALL, BY_ID, related } from '../data'
+import { ALL, BY_ID, getStructure, related } from '../data'
 import { BODY_BY_SYMBOL, ROLE_INFO, type BodyRole } from '../data/bodyElements'
 import { BY_SYMBOL } from '../data/periodic'
 import { elementsOf, KINDS, REGIONS, SYSTEMS, type Region } from '../data/types'
@@ -9,15 +9,17 @@ import { KeyTerms } from './Learn'
 interface Props {
   id: string | null
   region: Region | null
+  piece?: string | null
+  pieceCount?: number
   onSelect: (id: string) => void
   onElement: (s: string) => void
 }
 
 const ROLE_ORDER: BodyRole[] = ['bulk', 'major', 'trace', 'ultratrace', 'toxic']
 
-export default function StructureDetail({ id, region, onSelect, onElement }: Props) {
+export default function StructureDetail({ id, region, piece, pieceCount, onSelect, onElement }: Props) {
   if (!id && region) return <RegionPanel region={region} onSelect={onSelect} />
-  const s = id ? BY_ID[id] : null
+  const s = getStructure(id)
   if (!s) return <Welcome onSelect={onSelect} />
 
   const sys = SYSTEMS[s.system]
@@ -50,6 +52,12 @@ export default function StructureDetail({ id, region, onSelect, onElement }: Pro
           {s.shape && <CellArt shape={s.shape} color={sys.color} />}
         </div>
         <p className="lede">{s.desc}</p>
+        {(piece || pieceCount) && (
+          <div className="piece-line">
+            {piece && piece.toLowerCase() !== s.name.toLowerCase() && <span>Selected model piece: <b>{piece}</b></span>}
+            {!!pieceCount && <span>{pieceCount} 3D {pieceCount === 1 ? 'piece' : 'pieces'} highlighted</span>}
+          </div>
+        )}
       </header>
 
       {s.facts && (
@@ -169,12 +177,12 @@ function RegionPanel({ region, onSelect }: { region: Region; onSelect: (id: stri
 }
 
 function Welcome({ onSelect }: { onSelect: (id: string) => void }) {
-  const picks = ['bone-femur', 'organ-heart', 'heart', 'cell-rbc', 'thyroid', 'hair-follicle', 'cell-neuron', 'muscle-diaphragm', 'teeth', 'liver'].filter((i) => BY_ID[i])
+  const picks = ['bone-femur', 'heart', 'cell-rbc', 'thyroid', 'hair-follicle', 'cell-neuron', 'muscle-diaphragm', 'teeth', 'liver'].filter((i) => BY_ID[i])
   return (
     <article className="detail">
       <header className="detail-head">
         <h2>Pick any part of the body</h2>
-        <p className="lede">Switch layers to see the skeleton, muscles, organs, blood vessels or nerves, then tap a structure. Zoom into the hand or foot to reach individual carpals and phalanges.</p>
+        <p className="lede">Rotate the 3D body, pick a body system, then tap any structure: all 2,237 pieces are selectable. Use the hand and foot views to reach individual carpals and phalanges.</p>
       </header>
       <section className="card">
         <h3>Good places to start</h3>

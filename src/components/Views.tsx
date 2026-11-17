@@ -3,7 +3,7 @@ import { ALL, COUNTS } from '../data'
 import { BODY_BY_SYMBOL, BODY_ELEMENTS, ROLE_INFO, type BodyRole } from '../data/bodyElements'
 import { TOTAL_BONES } from '../data/bones'
 import { CATEGORY_COLORS, gridPos, PERIODIC, type ElementCategory } from '../data/periodic'
-import { KINDS, SYSTEMS, type Kind, type System } from '../data/types'
+import { KINDS, SYSTEMS, type Kind, type Structure, type System } from '../data/types'
 import { VITAMINS } from '../data/vitamins'
 import { configuration } from '../lib/electrons'
 import { ConfigText } from './Atom'
@@ -138,19 +138,20 @@ export function VitaminsView({ onVitamin }: { onVitamin: (id: string) => void })
 }
 
 // ---------------- Index ----------------
-export function IndexView({ selectedId, onSelect }: { selectedId: string | null; onSelect: (id: string) => void }) {
+export function IndexView({ selectedId, onSelect, extra = [] }: { selectedId: string | null; onSelect: (id: string) => void; extra?: Structure[] }) {
+  const [pieces, setPieces] = useState(false)
   const [q, setQ] = useState('')
   const [kind, setKind] = useState<Kind | 'all'>('all')
   const [system, setSystem] = useState<System | 'all'>('all')
   const list = useMemo(() => {
     const t = q.trim().toLowerCase()
-    return ALL.filter(
+    return (pieces ? [...ALL, ...extra] : ALL).filter(
       (s) =>
         (kind === 'all' || s.kind === kind) &&
         (system === 'all' || s.system === system) &&
         (!t || s.name.toLowerCase().includes(t) || s.desc.toLowerCase().includes(t)),
     ).sort((a, b) => a.name.localeCompare(b.name))
-  }, [q, kind, system])
+  }, [q, kind, system, pieces, extra])
 
   return (
     <div className="index">
@@ -179,9 +180,12 @@ export function IndexView({ selectedId, onSelect }: { selectedId: string | null;
           ))}
         </select>
       </div>
-      <div className="index-count">{list.length} results</div>
+      <label className="check">
+        <input id="pieces" type="checkbox" checked={pieces} onChange={(e) => setPieces(e.target.checked)} /> Also list every individual 3D model piece ({extra.length.toLocaleString()} more: branches of arteries, nerves, small muscles…)
+      </label>
+      <div className="index-count">{list.length.toLocaleString()} results</div>
       <ul className="index-list">
-        {list.map((s) => (
+        {list.slice(0, 600).map((s) => (
           <li key={s.id}>
             <button className={selectedId === s.id ? 'on' : ''} onClick={() => onSelect(s.id)} style={{ '--c': SYSTEMS[s.system].color } as React.CSSProperties}>
               <i />

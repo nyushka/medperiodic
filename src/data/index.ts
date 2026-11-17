@@ -103,3 +103,7 @@ export const COUNTS = ALL.reduce<Record<Kind, number>>(
   },
   {} as Record<Kind, number>,
 )
+
+/** Pages generated at runtime for 3D model pieces that have no hand-written entry. */
+export const SYNTH: Record<string, Structure> = {}
+export const getStructure = (id: string | null): Structure | null => (id ? BY_ID[id] ?? SYNTH[id] ?? null : null)

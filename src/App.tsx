@@ -7,25 +7,36 @@ import { getStructure, SYNTH } from './data'
 import type { Structure } from './data/types'
 import type { ModelIndex } from './lib/model'
 import { matchStructure, synthStructure, type PartMeta } from './lib/meshMatch'
+import { progress, ProgressUI } from './lib/progress'
+import { ProfileButton, SignInDialog } from './components/Profile'
+import StudyView from './components/StudyView'
 
 const Viewer3D = lazy(() => import('./components/Viewer3D'))
+const Landing = lazy(() => import('./components/Landing'))
 
-type View = 'body' | 'elements' | 'vitamins'
+type View = 'home' | 'body' | 'elements' | 'vitamins' | 'study'
 type DrawerItem = { type: 'element'; symbol: string } | { type: 'vitamin'; id: string }
 
 const VIEWS: { id: View; label: string }[] = [
   { id: 'body', label: 'Anatomy 3D' },
   { id: 'elements', label: 'Periodic table' },
   { id: 'vitamins', label: 'Vitamins' },
+  { id: 'study', label: 'My study' },
 ]
 
 const readHash = (): View => {
   const h = location.hash.slice(1)
-  return h === 'elements' || h === 'vitamins' ? h : 'body'
+  return h === 'elements' || h === 'vitamins' || h === 'study' || h === 'body' ? h : 'home'
 }
 
 export default function App() {
   const [view, setView] = useState<View>(readHash)
+  const [signIn, setSignIn] = useState(false)
+  const [entered, setEntered] = useState(() => readHash() !== 'home')
+  useEffect(() => {
+    if (view !== 'home') setEntered(true)
+    document.body.classList.toggle('on-landing', view === 'home')
+  }, [view])
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [piece, setPiece] = useState<string | null>(null)
   const [highlight, setHighlight] = useState<string[]>([])
@@ -81,6 +92,12 @@ export default function App() {
 
   /** Select a structure from the panels: highlight and fly to its 3D pieces. */
   const select = useCallback((id: string) => {
+    progress.record('structure', id)
+    try {
+      history.replaceState(null, '', '#body')
+    } catch {
+      /* ignore */
+    }
     setSelectedId(id)
     setPiece(null)
     setSide('detail')
@@ -99,6 +116,7 @@ export default function App() {
       return
     }
     const sid = matchStructure(m.n)
+    progress.record('structure', sid ?? `mesh-${m.id}`)
     if (sid) {
       setSelectedId(sid)
       setHighlight(byStruct.current.get(sid) ?? [m.id])
@@ -115,8 +133,15 @@ export default function App() {
     setStack((s) => [...s, item])
     requestAnimationFrame(() => drawerRef.current?.scrollTo({ top: 0 }))
   }
-  const openElement = (symbol: string) => push({ type: 'element', symbol })
-  const openVitamin = (id: string) => push({ type: 'vitamin', id })
+  const openElement = (symbol: string) => {
+    progress.record('element', symbol)
+    push({ type: 'element', symbol })
+  }
+  const openVitamin = (id: string) => {
+    progress.record('vitamin', id)
+    push({ type: 'vitamin', id })
+  }
+  const progressUI = useMemo(() => ({ openSignIn: () => setSignIn(true) }), [])
   const top = stack[stack.length - 1]
 
   useEffect(() => {
@@ -198,7 +223,13 @@ export default function App() {
   const callout = useMemo(() => getStructure(selectedId)?.name.replace(/\s*\(.*?\)/, '').replace(/ —.*$/, '') ?? null, [selectedId])
 
   return (
-    <div className="app">
+    <ProgressUI.Provider value={progressUI}>
+    {view === 'home' && (
+      <Suspense fallback={<div className="landing landing-fallback" />}>
+        <Landing onEnter={() => go('body')} onSignIn={() => setSignIn(true)} />
+      </Suspense>
+    )}
+    <div className="app" hidden={view === 'home'}>
       <header className="topbar">
         <button
           className="brand"
@@ -232,6 +263,7 @@ export default function App() {
             </button>
           ))}
         </nav>
+        <ProfileButton onStudy={() => go('study')} />
       </header>
 
       <main>
@@ -242,7 +274,7 @@ export default function App() {
           style={{ '--side-w': `${sideW}px` } as React.CSSProperties}
         >
           <Suspense fallback={<div className="viewer viewer-fallback">Starting 3D engine…</div>}>
-            <Viewer3D highlight={highlight} focusKey={focusKey} resetKey={resetKey} calloutLabel={callout} onPick={pick} onIndex={onIndex} extra={layoutTools} />
+            {entered && <Viewer3D highlight={highlight} focusKey={focusKey} resetKey={resetKey} calloutLabel={callout} onPick={pick} onIndex={onIndex} extra={layoutTools} />}
           </Suspense>
           {detailsOpen && (
             <div
@@ -274,6 +306,7 @@ export default function App() {
         </div>
         {view === 'elements' && <ElementsView onElement={openElement} />}
         {view === 'vitamins' && <VitaminsView onVitamin={openVitamin} />}
+        {view === 'study' && <StudyView onStructure={select} onElement={openElement} onVitamin={openVitamin} />}
       </main>
 
       <footer className="foot">
@@ -296,5 +329,7 @@ export default function App() {
         </div>
       )}
     </div>
+    {signIn && <SignInDialog onClose={() => setSignIn(false)} />}
+    </ProgressUI.Provider>
   )
 }

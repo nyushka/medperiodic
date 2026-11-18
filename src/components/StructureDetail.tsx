@@ -9,6 +9,7 @@ const Cell3D = lazy(() => import('./Cell3D'))
 const CellThumb = lazy(() => import('./Cell3D').then((m) => ({ default: m.CellThumb })))
 import { elementColor } from './ElementPanel'
 import { KeyTerms } from './Learn'
+import { LearnedButton } from './Profile'
 
 interface Props {
   id: string | null
@@ -65,6 +66,9 @@ export default function StructureDetail({ id, region, piece, pieceCount, onSelec
           </Suspense>
         )}
         <p className="lede">{s.desc}</p>
+        <div className="head-actions">
+          <LearnedButton type="structure" id={s.id} />
+        </div>
         {piece && piece.toLowerCase() !== s.name.toLowerCase() && (
           <p className="piece-line">
             Selected piece: {piece}

@@ -7,6 +7,7 @@ import { SYSTEMS } from '../data/types'
 import { BLOCK_OF, SHELL_NAMES, shellCounts, unpairedElectrons, valenceElectrons } from '../lib/electrons'
 import { Bohr, Configs, Orbitals } from './Atom'
 import { Fig, HowToReadConfig, HowToReadIntake } from './Learn'
+import { LearnedButton } from './Profile'
 
 const Atom3D = lazy(() => import('./Atom3D'))
 
@@ -71,6 +72,9 @@ export default function ElementPanel({ symbol, onVitamin, onStructure }: Props) 
           </p>
           <h2>{e.name}</h2>
           <p className="lede">{b ? b.summary : `${e.name} is not present in the body in meaningful amounts and has no known biological role.`}</p>
+          <div className="head-actions">
+            <LearnedButton type="element" id={e.symbol} />
+          </div>
         </div>
       </header>
 

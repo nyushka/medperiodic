@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { VITAMIN_BY_ID } from '../data/vitamins'
 import { BY_SYMBOL } from '../data/periodic'
 import { elementColor, List } from './ElementPanel'
+import { LearnedButton } from './Profile'
 
 interface Props {
   id: string
@@ -37,6 +38,9 @@ export default function VitaminPanel({ id, onElement }: Props) {
           <h2>{v.name}</h2>
           <p className="chem">{v.chem}</p>
           <p className="lede">{v.summary}</p>
+          <div className="head-actions">
+            <LearnedButton type="vitamin" id={v.id} />
+          </div>
         </div>
       </header>
 

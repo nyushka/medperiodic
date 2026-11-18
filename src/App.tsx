@@ -9,7 +9,7 @@ import type { ModelIndex } from './lib/model'
 import { matchStructure, synthStructure, type PartMeta } from './lib/meshMatch'
 import { progress, ProgressUI } from './lib/progress'
 import { ProfileButton, SignInDialog } from './components/Profile'
-import StudyView from './components/StudyView'
+import StudyMode, { type StudyTab } from './components/StudyMode'
 
 const Viewer3D = lazy(() => import('./components/Viewer3D'))
 const Landing = lazy(() => import('./components/Landing'))
@@ -21,7 +21,7 @@ const VIEWS: { id: View; label: string }[] = [
   { id: 'body', label: 'Anatomy 3D' },
   { id: 'elements', label: 'Periodic table' },
   { id: 'vitamins', label: 'Vitamins' },
-  { id: 'study', label: 'My study' },
+  { id: 'study', label: 'Study' },
 ]
 
 const readHash = (): View => {
@@ -32,6 +32,7 @@ const readHash = (): View => {
 export default function App() {
   const [view, setView] = useState<View>(readHash)
   const [signIn, setSignIn] = useState(false)
+  const [studyTab, setStudyTab] = useState<StudyTab>('decks')
   const [entered, setEntered] = useState(() => readHash() !== 'home')
   useEffect(() => {
     if (view !== 'home') setEntered(true)
@@ -263,7 +264,12 @@ export default function App() {
             </button>
           ))}
         </nav>
-        <ProfileButton onStudy={() => go('study')} />
+        <ProfileButton
+          onStudy={() => {
+            setStudyTab('progress')
+            go('study')
+          }}
+        />
       </header>
 
       <main>
@@ -306,7 +312,7 @@ export default function App() {
         </div>
         {view === 'elements' && <ElementsView onElement={openElement} />}
         {view === 'vitamins' && <VitaminsView onVitamin={openVitamin} />}
-        {view === 'study' && <StudyView onStructure={select} onElement={openElement} onVitamin={openVitamin} />}
+        {view === 'study' && <StudyMode tab={studyTab} onTab={setStudyTab} onStructure={select} onElement={openElement} onVitamin={openVitamin} />}
       </main>
 
       <footer className="foot">

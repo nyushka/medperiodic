@@ -1,3 +1,4 @@
+import { searchStructures } from '../data/aliases'
 import { useMemo, useState } from 'react'
 import { ALL, COUNTS } from '../data'
 import { BODY_BY_SYMBOL, BODY_ELEMENTS, ROLE_INFO, type BodyRole } from '../data/bodyElements'
@@ -144,13 +145,9 @@ export function IndexView({ selectedId, onSelect, extra = [] }: { selectedId: st
   const [kind, setKind] = useState<Kind | 'all'>('all')
   const [system, setSystem] = useState<System | 'all'>('all')
   const list = useMemo(() => {
-    const t = q.trim().toLowerCase()
-    return (pieces ? [...ALL, ...extra] : ALL).filter(
-      (s) =>
-        (kind === 'all' || s.kind === kind) &&
-        (system === 'all' || s.system === system) &&
-        (!t || s.name.toLowerCase().includes(t) || s.desc.toLowerCase().includes(t)),
-    ).sort((a, b) => a.name.localeCompare(b.name))
+    const pool = (pieces ? [...ALL, ...extra] : ALL).filter((s) => (kind === 'all' || s.kind === kind) && (system === 'all' || s.system === system))
+    // Ranked search that also understands everyday names (kneecap, belly button, knuckles…)
+    return q.trim() ? searchStructures(q, pool) : pool.sort((a, b) => a.name.localeCompare(b.name))
   }, [q, kind, system, pieces, extra])
 
   return (
@@ -159,12 +156,14 @@ export function IndexView({ selectedId, onSelect, extra = [] }: { selectedId: st
         <span><b>{TOTAL_BONES}</b> bones</span>
         <span><b>{COUNTS.muscle}</b> muscles</span>
         <span><b>{(COUNTS.cell ?? 0) + (COUNTS.blood ?? 0)}</b> cell types & blood parts</span>
-        <span><b>{COUNTS.organ}</b> organs</span>
+        <span><b>{COUNTS.joint}</b> joints</span>
+        <span><b>{COUNTS.nerve}</b> nerves</span>
+        <span><b>{COUNTS.organ}</b> organs & parts</span>
         <span><b>{ALL.length}</b> structures total</span>
       </div>
       <label className="search">
         <span className="sr">Search the body</span>
-        <input id="search" type="search" placeholder="Search: femur, neuron, thyroid, sweat…" value={q} onChange={(e) => setQ(e.target.value)} />
+        <input id="search" type="search" placeholder="Search any name: femur, kneecap, knuckles, belly button…" value={q} onChange={(e) => setQ(e.target.value)} />
       </label>
       <div className="filters">
         <select id="kind" value={kind} onChange={(e) => setKind(e.target.value as Kind | 'all')} aria-label="Type">

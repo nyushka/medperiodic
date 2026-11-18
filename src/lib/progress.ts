@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react'
+import type { CardState, CustomDeck } from './flashcards'
 
 // Study progress, kept per profile in this browser (localStorage). There is no server:
 // a profile is a name on this device, so several people can share one computer.
@@ -13,6 +14,10 @@ export interface Profile {
   seen: Record<string, number> // "type:id" -> last opened (ms)
   learned: Record<string, number> // "type:id" -> marked learned (ms)
   days: string[] // ISO dates with any study activity
+  srs?: Record<string, CardState> // flashcard id -> spaced-repetition state
+  decks?: CustomDeck[] // the person's own (AI-generated or hand-written) decks
+  quiz?: Record<string, { best: number; last: number; total: number; at: number }> // deck id -> quiz scores
+  reviews?: Record<string, number> // ISO date -> cards reviewed that day
 }
 interface Store {
   version: 1
@@ -78,6 +83,36 @@ export const progress = {
     p.learned = { ...p.learned }
     commit()
   },
+  /** Save a flashcard review. */
+  review(cardId: string, state: CardState) {
+    const p = store.profiles[store.active]
+    p.srs = { ...(p.srs ?? {}), [cardId]: state }
+    const d = today()
+    p.reviews = { ...(p.reviews ?? {}), [d]: (p.reviews?.[d] ?? 0) + 1 }
+    if (p.days[p.days.length - 1] !== d) p.days = [...p.days.slice(-400), d]
+    commit()
+  },
+  saveDeck(deck: CustomDeck) {
+    const p = store.profiles[store.active]
+    const rest = (p.decks ?? []).filter((d) => d.id !== deck.id)
+    p.decks = [deck, ...rest]
+    commit()
+  },
+  deleteDeck(id: string) {
+    const p = store.profiles[store.active]
+    p.decks = (p.decks ?? []).filter((d) => d.id !== id)
+    if (p.srs) p.srs = Object.fromEntries(Object.entries(p.srs).filter(([k]) => !k.startsWith(`c:${id}:`)))
+    commit()
+  },
+  recordQuiz(deckId: string, score: number, total: number) {
+    const p = store.profiles[store.active]
+    const prev = p.quiz?.[deckId]
+    const pct = total ? score / total : 0
+    p.quiz = { ...(p.quiz ?? {}), [deckId]: { best: Math.max(prev?.best ?? 0, pct), last: pct, total, at: Date.now() } }
+    const d = today()
+    if (p.days[p.days.length - 1] !== d) p.days = [...p.days.slice(-400), d]
+    commit()
+  },
   /** Create a profile; a guest's progress so far moves into the first profile created. */
   signUp(name: string, color: string) {
     const id = `p${Date.now().toString(36)}`
@@ -87,6 +122,10 @@ export const progress = {
       p.seen = { ...guest.seen }
       p.learned = { ...guest.learned }
       p.days = [...guest.days]
+      p.srs = { ...(guest.srs ?? {}) }
+      p.decks = [...(guest.decks ?? [])]
+      p.quiz = { ...(guest.quiz ?? {}) }
+      p.reviews = { ...(guest.reviews ?? {}) }
       store.profiles[GUEST] = blank(GUEST, 'Guest', '#7f8794')
     }
     store.profiles[id] = p

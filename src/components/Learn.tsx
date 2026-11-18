@@ -39,10 +39,14 @@ export const GLOSSARY: Record<string, string> = {
   Cofactor: 'A non-protein helper, often a metal ion such as Zn²⁺ or Fe²⁺, that an enzyme needs to work.',
   Keratin: 'A tough structural protein in hair, nails and skin, cross-linked by sulfur bonds.',
   Collagen: 'The most abundant protein in the body; it forms the fibers of bone, skin, tendons and ligaments.',
+  'Synovial joint': 'A movable joint with a fluid-filled capsule and slippery cartilage-covered bone ends, such as the knee or knuckles.',
+  'Articular cartilage': 'Smooth hyaline cartilage capping bone ends inside a joint; it has no blood supply, so it heals poorly.',
+  Ligament: 'A tough band of collagen joining bone to bone across a joint.',
 }
 
 const KIND_TERMS: Record<Kind, string[]> = {
   bone: ['Long bone', 'Short bone', 'Flat bone', 'Irregular bone', 'Sesamoid bone', 'Hydroxyapatite', 'Collagen'],
+  joint: ['Synovial joint', 'Articular cartilage', 'Ligament', 'Flexion', 'Extension', 'Abduction / adduction'],
   muscle: ['Origin', 'Insertion', 'Action', 'Innervation', 'Flexion', 'Extension', 'Abduction / adduction'],
   organ: ['Mitochondria', 'Cofactor', 'ATP'],
   cell: ['Nucleus', 'Mitochondria', 'ATP', 'Cofactor'],

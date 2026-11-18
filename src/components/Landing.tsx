@@ -141,7 +141,7 @@ export default function Landing({ onEnter, onSignIn }: Props) {
           <br />
           down to the atom.
         </h1>
-        <p className="landing-sub">Explore 2,237 real anatomical structures in 3D, then follow them all the way down to the cells, elements and vitamins they’re made of.</p>
+        <p className="landing-sub">Explore 2,237 real anatomical structures in 3D, follow them down to the cells, elements and vitamins they’re made of, then lock it in with flashcards and quizzes.</p>
         <div className="landing-actions">
           <button className="landing-primary" onClick={onEnter}>
             {progress.signedIn ? `Continue studying, ${p.name}` : 'Start exploring'}
@@ -157,7 +157,7 @@ export default function Landing({ onEnter, onSignIn }: Props) {
           <div><dt>206</dt><dd>bones</dd></div>
           <div><dt>2,237</dt><dd>3D structures</dd></div>
           <div><dt>118</dt><dd>elements</dd></div>
-          <div><dt>13</dt><dd>vitamins</dd></div>
+          <div><dt>2,800+</dt><dd>flashcards</dd></div>
         </dl>
       </div>
       {!ready && (

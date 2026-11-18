@@ -1,10 +1,11 @@
 import { BLOOD, NERVES, ORGANS, SKIN, TISSUES, VESSELS } from './anatomy'
 import { BONES } from './bones'
 import { CELLS } from './cells'
+import { MORE, MORE_LINKS } from './more'
 import { MUSCLES } from './muscles'
 import type { Kind, Structure } from './types'
 
-export const ALL: Structure[] = [...ORGANS, ...BONES, ...MUSCLES, ...CELLS, ...BLOOD, ...VESSELS, ...NERVES, ...SKIN, ...TISSUES]
+export const ALL: Structure[] = [...ORGANS, ...BONES, ...MUSCLES, ...CELLS, ...BLOOD, ...VESSELS, ...NERVES, ...SKIN, ...TISSUES, ...MORE]
 
 export const BY_ID: Record<string, Structure> = Object.fromEntries(ALL.map((s) => [s.id, s]))
 
@@ -83,8 +84,8 @@ const add = (a: string, b: string) => {
   ;(linkMap[a] ??= new Set()).add(b)
   ;(linkMap[b] ??= new Set()).add(a)
 }
-for (const [a, list] of Object.entries(LINKS)) for (const b of list) add(a, b)
-const DEFAULTS: Partial<Record<Kind, string[]>> = { bone: BONE_CELLS, muscle: MUSCLE_CELLS, nerve: NERVE_CELLS, vessel: VESSEL_CELLS }
+for (const src of [LINKS, MORE_LINKS]) for (const [a, list] of Object.entries(src)) for (const b of list) add(a, b)
+const DEFAULTS: Partial<Record<Kind, string[]>> = { joint: c('chondrocyte', 'fibroblast'), bone: BONE_CELLS, muscle: MUSCLE_CELLS, nerve: NERVE_CELLS, vessel: VESSEL_CELLS }
 for (const s of ALL) for (const b of DEFAULTS[s.kind] ?? []) if (BY_ID[b]) (linkMap[s.id] ??= new Set()).add(b)
 
 export function related(id: string): Structure[] {

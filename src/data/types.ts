@@ -1,4 +1,4 @@
-export type Kind = 'bone' | 'muscle' | 'organ' | 'cell' | 'vessel' | 'nerve' | 'skin' | 'tissue' | 'blood'
+export type Kind = 'bone' | 'joint' | 'muscle' | 'organ' | 'cell' | 'vessel' | 'nerve' | 'skin' | 'tissue' | 'blood'
 
 export type System =
   | 'skeletal'
@@ -65,6 +65,7 @@ export const SYSTEMS: Record<System, { label: string; color: string }> = {
 
 export const KINDS: Record<Kind, { label: string; plural: string }> = {
   bone: { label: 'Bone', plural: 'Bones' },
+  joint: { label: 'Joint', plural: 'Joints' },
   muscle: { label: 'Muscle', plural: 'Muscles' },
   organ: { label: 'Organ', plural: 'Organs' },
   cell: { label: 'Cell', plural: 'Cells' },
@@ -113,6 +114,16 @@ export const KIND_ELEMENTS: Record<Kind, Record<string, string>> = {
     Sr: 'Strontium swaps in for some calcium in the mineral',
     B: 'May reduce urinary loss of calcium and magnesium',
     Pb: 'Lead is stored in bone, mimicking calcium (toxic)',
+  },
+  joint: {
+    ...BASE,
+    Ca: 'Calcium phosphate in the bone ends beneath the cartilage; calcium pyrophosphate crystals cause pseudogout',
+    S: 'Chondroitin sulfate in cartilage holds water so the joint can absorb shock',
+    N: 'Type II collagen gives articular cartilage its strength',
+    Mn: 'Needed to build proteoglycans in cartilage and synovial fluid',
+    Cu: 'Lysyl oxidase (copper) cross-links collagen in ligaments and the joint capsule',
+    Na: 'Sodium ions bound to cartilage’s negative charges draw in water',
+    Zn: 'Zinc enzymes (MMPs) remodel cartilage; overactive in arthritis',
   },
   muscle: {
     ...BASE,

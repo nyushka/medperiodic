@@ -1,4 +1,5 @@
 import { ALL, BY_ID, getStructure, related } from '../data'
+import { laymanNames } from '../data/aliases'
 import { BODY_BY_SYMBOL, type BodyRole } from '../data/bodyElements'
 import { BY_SYMBOL } from '../data/periodic'
 import { elementsOf, KINDS, REGIONS, SYSTEMS, type Region } from '../data/types'
@@ -58,6 +59,10 @@ export default function StructureDetail({ id, region, piece, pieceCount, onSelec
               {s.count && s.count > 1 ? ` · ×${s.count.toLocaleString()}` : ''}
             </p>
             <h2>{s.name}</h2>
+            {(() => {
+              const also = [...(s.aka ? [s.aka] : []), ...laymanNames(s.id)].filter((n) => !s.name.toLowerCase().includes(n.toLowerCase()))
+              return also.length ? <p className="aka">Also called: {also.join(', ')}</p> : null
+            })()}
           </div>
         </div>
         {s.shape && (

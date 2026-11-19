@@ -10,20 +10,13 @@ interface Props {
   onSignIn: () => void
 }
 
-const SCALES = ['Body', 'Region', 'Organ', 'Muscle', 'Cell', 'Element']
 
 /** Full-screen start page: the 3D body turning slowly in a dark, rim-lit stage. */
 export default function Landing({ onEnter, onSignIn }: Props) {
   const host = useRef<HTMLDivElement>(null)
   const [loaded, setLoaded] = useState(0)
   const [ready, setReady] = useState(false)
-  const [scaleIdx, setScaleIdx] = useState(0)
   const p = useProgress()
-
-  useEffect(() => {
-    const id = setInterval(() => setScaleIdx((i) => (i + 1) % SCALES.length), 1600)
-    return () => clearInterval(id)
-  }, [])
 
   useEffect(() => {
     if (!host.current) return
@@ -133,15 +126,12 @@ export default function Landing({ onEnter, onSignIn }: Props) {
         )}
       </header>
       <div className="landing-copy">
-        <p className="landing-eyebrow">
-          Interactive anatomy <span>·</span> <span className="scale-word" key={scaleIdx}>{SCALES[scaleIdx]}</span>
-        </p>
         <h1>
           The body,
           <br />
           down to the atom.
         </h1>
-        <p className="landing-sub">Explore 2,237 real anatomical structures in 3D, follow them down to the cells, elements and vitamins they’re made of, then lock it in with flashcards and quizzes.</p>
+        <p className="landing-sub">Explore 2,237 real anatomical structures in 3D, trace them down to the cells, elements and vitamins they’re made of, and test yourself with flashcards and quizzes.</p>
         <div className="landing-actions">
           <button className="landing-primary" onClick={onEnter}>
             {progress.signedIn ? `Continue studying, ${p.name}` : 'Start exploring'}

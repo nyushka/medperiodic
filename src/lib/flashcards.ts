@@ -157,7 +157,7 @@ function structureCards(s: Structure, deck: string): Card[] {
   }
   if (s.kind === 'bone') {
     const type = fact('Bone type')
-    if (type && s.count) out.push({ id: `bonetype:${s.id}`, deck, tag: 'Bone type', front: `What type of bone is the ${clean(s.name).replace(/^C\d+ — /, '')}, and how many do you have?`, back: `${type} · ${s.count === 1 ? 'one (unpaired)' : `${s.count}`}`, ref, quiz: 'bonetype' })
+    if (type && s.count) out.push({ id: `bonetype:${s.id}`, deck, tag: 'Bone type', front: `What type of bone is the ${clean(s.name)}, and how many do you have?`, back: `${type} · ${s.count === 1 ? 'one (unpaired)' : `${s.count}`}`, ref, quiz: 'bonetype' })
   }
   if (s.kind === 'cell' || s.kind === 'blood') {
     const life = fact('Lifespan')

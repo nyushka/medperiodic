@@ -126,7 +126,7 @@ const CN: [string, string, string][] = [
   ['XII', 'Hypoglossal', 'Moves the tongue for speech and swallowing.'],
 ]
 export const NERVES: Structure[] = [
-  ...CN.map(([num, nm, desc]) => n({ id: `cn-${num.toLowerCase()}`, name: `Cranial nerve ${num} — ${nm}`, region: num === 'X' ? 'chest' : 'head', desc, count: 2 })),
+  ...CN.map(([num, nm, desc]) => n({ id: `cn-${num.toLowerCase()}`, name: `${nm} nerve (CN ${num})`, aka: `Cranial nerve ${num}`, region: num === 'X' ? 'chest' : 'head', desc, count: 2 })),
   n({ id: 'phrenic', name: 'Phrenic nerve', region: 'chest', desc: 'From C3–C5, runs down through the chest to power the diaphragm. Irritation can cause pain referred to the shoulder tip.', count: 2 }),
   n({ id: 'brachial-plexus', name: 'Brachial plexus', region: 'neck', desc: 'Network of nerves from C5–T1 that supplies the entire arm.', count: 2 }),
   n({ id: 'median', name: 'Median nerve', region: 'arm', desc: 'Runs through the carpal tunnel to supply the thumb muscles and feeling in the thumb, index and middle finger. Compression causes carpal tunnel syndrome.', count: 2 }),

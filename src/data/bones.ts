@@ -25,10 +25,10 @@ const SKULL: B[] = [
 ]
 
 const VERT: B[] = [
-  ['c1', 'C1 — Atlas', 'neck', 1, 'Irregular vertebra', 'Ring-shaped first vertebra with no body, named for the Titan who held up the sky. It holds the skull and allows the "yes" nodding motion.'],
-  ['c2', 'C2 — Axis', 'neck', 1, 'Irregular vertebra', 'Its tooth-like dens projects up into the atlas and forms a pivot for the "no" head rotation (about half of all neck rotation).'],
-  ...[3, 4, 5, 6].map((n): B => [`c${n}`, `C${n} — Cervical vertebra`, 'neck', 1, 'Irregular vertebra', `Typical cervical vertebra with a small body, a split (bifid) spinous process, and transverse foramina carrying the vertebral arteries to the brain.${n === 4 ? ' The C3–C5 nerve roots form the phrenic nerve that powers the diaphragm.' : ''}`]),
-  ['c7', 'C7 — Vertebra prominens', 'neck', 1, 'Irregular vertebra', 'Its long spinous process is the bump you can feel at the base of the neck, a landmark for counting vertebrae.'],
+  ['c1', 'Atlas (C1)', 'neck', 1, 'Irregular vertebra', 'Ring-shaped first vertebra with no body, named for the Titan who held up the sky. It holds the skull and allows the "yes" nodding motion.'],
+  ['c2', 'Axis (C2)', 'neck', 1, 'Irregular vertebra', 'Its tooth-like dens projects up into the atlas and forms a pivot for the "no" head rotation (about half of all neck rotation).'],
+  ...[3, 4, 5, 6].map((n): B => [`c${n}`, `C${n} cervical vertebra`, 'neck', 1, 'Irregular vertebra', `Typical cervical vertebra with a small body, a split (bifid) spinous process, and transverse foramina carrying the vertebral arteries to the brain.${n === 4 ? ' The C3–C5 nerve roots form the phrenic nerve that powers the diaphragm.' : ''}`]),
+  ['c7', 'C7 vertebra (vertebra prominens)', 'neck', 1, 'Irregular vertebra', 'Its long spinous process is the bump you can feel at the base of the neck, a landmark for counting vertebrae.'],
   ...Array.from({ length: 12 }, (_, i): B => {
     const n = i + 1
     const notes: Record<number, string> = {
@@ -39,7 +39,7 @@ const VERT: B[] = [
       11: ' Transitional vertebra; only one full facet for its rib.',
       12: ' The aorta passes behind the diaphragm here; the thoracolumbar junction is a common fracture site.',
     }
-    return [`t${n}`, `T${n} — Thoracic vertebra`, 'back', 1, 'Irregular vertebra', `Heart-shaped body with facets for rib ${n}. Long downward-pointing spinous process limits backward bending.${notes[n] ?? ''}`]
+    return [`t${n}`, `T${n} thoracic vertebra`, 'back', 1, 'Irregular vertebra', `Heart-shaped body with facets for rib ${n}. Long downward-pointing spinous process limits backward bending.${notes[n] ?? ''}`]
   }),
   ...Array.from({ length: 5 }, (_, i): B => {
     const n = i + 1
@@ -48,7 +48,7 @@ const VERT: B[] = [
       4: ' The top of the iliac crests lines up with L4, the landmark used for lumbar punctures (spinal taps) at L3–L4 or L4–L5.',
       5: ' The largest, most heavily loaded vertebra. The L5–S1 disc is the most common site of herniation.',
     }
-    return [`l${n}`, `L${n} — Lumbar vertebra`, 'back', 1, 'Irregular vertebra', `Massive kidney-shaped body built to carry upper-body weight. Short, hatchet-shaped spinous process.${notes[n] ?? ''}`]
+    return [`l${n}`, `L${n} lumbar vertebra`, 'back', 1, 'Irregular vertebra', `Massive kidney-shaped body built to carry upper-body weight. Short, hatchet-shaped spinous process.${notes[n] ?? ''}`]
   }),
   ['sacrum', 'Sacrum', 'pelvis', 1, 'Irregular (5 fused)', 'Five vertebrae fused by about age 25 into a triangular bone that forms the back of the pelvis and transmits body weight to the hips through the sacroiliac joints.'],
   ['coccyx', 'Coccyx (tailbone)', 'pelvis', 1, 'Irregular (3–5 fused)', 'The remnant of a tail, made of 3–5 small fused vertebrae. Anchors pelvic floor muscles and the gluteus maximus.'],
@@ -66,7 +66,7 @@ const THORAX: B[] = [
       : n <= 7 ? ' Connects directly to the sternum by its own costal cartilage.'
       : n <= 10 ? ' Its cartilage joins the cartilage of the rib above instead of the sternum.'
       : ' Ends freely in the abdominal wall with no front attachment. Protects the kidneys.'
-    return [`rib${n}`, `Rib ${n}`, 'chest', 2, `Flat — ${k}`, `Pair of ${k}s that rise and fall with each breath, moved by the intercostal muscles.${extra}`]
+    return [`rib${n}`, `Rib ${n}`, 'chest', 2, `Flat (${k})`, `Pair of ${k}s that rise and fall with each breath, moved by the intercostal muscles.${extra}`]
   }),
 ]
 

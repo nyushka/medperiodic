@@ -94,15 +94,12 @@ export default function StudyMode({ tab, onTab, onStructure, onElement, onVitami
     <section className="view study-mode">
       <header className="sm-head">
         <div>
-          <p className="eyebrow">Study mode</p>
           <h1>Flashcards &amp; quizzes</h1>
           <p className="lede">Decks built from every part of the atlas, sorted by body section, with spaced repetition that brings each card back just before you’d forget it. Or have AI write a deck on any topic.</p>
         </div>
-        <dl className="sm-stats">
-          <div><dt>{allDue.length}</dt><dd>due now</dd></div>
-          <div><dt>{reviewedToday}</dt><dd>reviewed today</dd></div>
-          <div><dt>{streak(p.days)}</dt><dd>day streak</dd></div>
-        </dl>
+        <p className="sm-stats">
+          <strong>{allDue.length}</strong> due now · <strong>{reviewedToday}</strong> reviewed today · <strong>{streak(p.days)}</strong>-day streak
+        </p>
       </header>
 
       <div className="sm-bar">

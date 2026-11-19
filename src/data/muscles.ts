@@ -142,10 +142,10 @@ const M_DATA: M[] = [
   ['fhl', 'Flexor hallucis longus', 'leg', 'Posterior leg (deep)', 'Back of fibula', 'Distal phalanx of big toe', 'Curls the big toe; push-off in walking', 'Tibial nerve'],
   // Foot
   ['edb', 'Extensor digitorum brevis', 'foot', 'Dorsum of foot', 'Upper calcaneus', 'Tendons of toes 1–4', 'Extends the toes', 'Deep fibular nerve'],
-  ['abd-hallucis', 'Abductor hallucis', 'foot', 'Sole — layer 1', 'Calcaneal tuberosity', 'Proximal phalanx of big toe', 'Abducts big toe; supports medial arch', 'Medial plantar nerve'],
-  ['fdb', 'Flexor digitorum brevis', 'foot', 'Sole — layer 1', 'Calcaneal tuberosity, plantar aponeurosis', 'Middle phalanges of toes 2–5', 'Flexes the toes', 'Medial plantar nerve'],
-  ['adm-foot', 'Abductor digiti minimi (foot)', 'foot', 'Sole — layer 1', 'Calcaneal tuberosity', 'Proximal phalanx of little toe', 'Abducts the little toe', 'Lateral plantar nerve'],
-  ['quadratus-plantae', 'Quadratus plantae', 'foot', 'Sole — layer 2', 'Calcaneus', 'Tendon of flexor digitorum longus', 'Straightens the pull of the long toe flexor', 'Lateral plantar nerve'],
+  ['abd-hallucis', 'Abductor hallucis', 'foot', 'Sole, layer 1', 'Calcaneal tuberosity', 'Proximal phalanx of big toe', 'Abducts big toe; supports medial arch', 'Medial plantar nerve'],
+  ['fdb', 'Flexor digitorum brevis', 'foot', 'Sole, layer 1', 'Calcaneal tuberosity, plantar aponeurosis', 'Middle phalanges of toes 2–5', 'Flexes the toes', 'Medial plantar nerve'],
+  ['adm-foot', 'Abductor digiti minimi (foot)', 'foot', 'Sole, layer 1', 'Calcaneal tuberosity', 'Proximal phalanx of little toe', 'Abducts the little toe', 'Lateral plantar nerve'],
+  ['quadratus-plantae', 'Quadratus plantae', 'foot', 'Sole, layer 2', 'Calcaneus', 'Tendon of flexor digitorum longus', 'Straightens the pull of the long toe flexor', 'Lateral plantar nerve'],
   // Pelvic floor
   ['levator-ani', 'Levator ani', 'pelvis', 'Pelvic floor', 'Pubis, obturator fascia, ischial spine', 'Coccyx, perineal body, anococcygeal ligament', 'Supports pelvic organs; controls continence', 'Nerve to levator ani (S3–S4), pudendal nerve', 'Kegel exercises train this muscle.'],
   ['ext-urethral', 'External urethral sphincter', 'pelvis', 'Pelvic floor', 'Ischiopubic ramus', 'Surrounds the urethra', 'Voluntarily holds in urine', 'Pudendal nerve (S2–S4)'],

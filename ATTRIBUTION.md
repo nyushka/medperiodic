@@ -30,4 +30,4 @@ The models are for education and visualisation and are not suitable for diagnosi
 
 ## Fonts
 
-Newsreader, Source Sans 3 and Geist Mono, served by Google Fonts under the SIL Open Font License.
+Oswald and Source Serif 4, served by Google Fonts under the SIL Open Font License.

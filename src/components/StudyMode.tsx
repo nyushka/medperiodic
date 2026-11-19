@@ -95,7 +95,6 @@ export default function StudyMode({ tab, onTab, onStructure, onElement, onVitami
       <header className="sm-head">
         <div>
           <h1>Flashcards &amp; quizzes</h1>
-          <p className="lede">Decks built from every part of the atlas, sorted by body section, with spaced repetition that brings each card back just before you’d forget it. Or have AI write a deck on any topic.</p>
         </div>
         <p className="sm-stats">
           <strong>{allDue.length}</strong> due now · <strong>{reviewedToday}</strong> reviewed today · <strong>{streak(p.days)}</strong>-day streak
@@ -160,7 +159,6 @@ function DeckTile({ info, cards, srs, best, onStudy, onQuiz, onBrowse, canQuiz =
         <h3>{info.label}</h3>
         {st.due > 0 && <span className="due-badge" title="Cards due for review">{st.due} due</span>}
       </div>
-      <p className="deck-blurb">{info.blurb}</p>
       <div className="deck-meter" aria-label={`${st.seen} of ${st.total} cards studied`}>
         <span style={{ width: `${pct * 100}%` }} />
       </div>
@@ -239,7 +237,7 @@ function Review({ title, color, cards, onDone, onOpen }: { title: string; color:
         <div className="run-done">
           <p className="eyebrow">{title}</p>
           <h2>Session complete</h2>
-          <p className="lede">You reviewed {reviewed} card{reviewed === 1 ? '' : 's'}. The ones you found easy will come back in days; the hard ones sooner.</p>
+          <p className="lede">{reviewed} reviewed</p>
           <div className="done-grid">
             {GRADES.map(({ g, label }) => (
               <div key={g} className={`g${g}`}><strong>{done[g]}</strong><span>{label}</span></div>
@@ -263,7 +261,6 @@ function Review({ title, color, cards, onDone, onOpen }: { title: string; color:
           <div className="fc-face fc-front">
             <p className="fc-tag">{card.tag}</p>
             <div className="fc-text"><Multiline text={card.front} /></div>
-            <p className="fc-hint">Tap or press Space to show the answer</p>
           </div>
           <div className="fc-face fc-back">
             <p className="fc-tag">{card.tag}</p>
@@ -286,10 +283,10 @@ function Review({ title, color, cards, onDone, onOpen }: { title: string; color:
       </div>
       <div className="grade-row" aria-hidden={!flipped}>
         {flipped ? (
-          GRADES.map(({ g, label, key }) => (
+          GRADES.map(({ g, label }) => (
             <button key={g} className={`grade g${g}`} onClick={() => grade(g)}>
               <strong>{label}</strong>
-              <small>{intervalLabel(srs[card.id], g)} · {key}</small>
+              <small>{intervalLabel(srs[card.id], g)}</small>
             </button>
           ))
         ) : (
@@ -337,13 +334,11 @@ function Quiz({ title, color, items, deckId, onDone, onOpen }: { title: string; 
   })
 
   if (finished) {
-    const pct = Math.round((score / items.length) * 100)
     return (
       <section className="view study-run" style={{ '--c': color } as React.CSSProperties}>
         <div className="run-done">
           <p className="eyebrow">{title} · quiz</p>
           <h2>{score} / {items.length}</h2>
-          <p className="lede">{pct >= 90 ? 'Excellent. You know this section well.' : pct >= 70 ? 'Solid. Review the cards you missed and try again.' : 'Worth another pass: study the deck’s flashcards, then retake the quiz.'}</p>
           <div className="deck-actions">
             <button className="btn-primary" onClick={onDone}>Back to decks</button>
           </div>
@@ -473,8 +468,6 @@ function DeckEditor({ deck }: { deck: CustomDeck }) {
   )
 }
 
-const SUGGEST = ['Brachial plexus', 'Cranial nerves', 'Rotator cuff', 'Iron metabolism', 'Cardiac cycle', 'Bones of the hand', 'Krebs cycle', 'Thyroid hormones', 'Knee ligaments', 'Vitamin D and calcium']
-
 function Generator() {
   const [topic, setTopic] = useState('')
   const [count, setCount] = useState(20)
@@ -538,12 +531,8 @@ function Generator() {
   return (
     <div className="gen">
       <div className="gen-main">
-        <h2>Make a deck on any topic</h2>
-        <p className="note">
-          Type a topic and AI writes flashcards plus a multiple-choice quiz, which then join your spaced-repetition reviews.
-          {mode === 'claude' && ' It uses Claude on your claude.ai account; you’ll be asked to allow it the first time.'}
-          {mode === 'key' && ' It uses your Anthropic API key, which stays in this browser.'}
-        </p>
+        <h2>New deck</h2>
+        {mode === 'claude' && <p className="note">Uses your Claude account.</p>}
         <form
           className="gen-form"
           onSubmit={(e) => {
@@ -552,7 +541,7 @@ function Generator() {
             else blank()
           }}
         >
-          <input type="text" value={topic} onChange={(e) => setTopic(e.target.value)} maxLength={200} placeholder="e.g. brachial plexus, the cardiac cycle, iron absorption…" aria-label="Topic" disabled={busy} />
+          <input type="text" value={topic} onChange={(e) => setTopic(e.target.value)} maxLength={200} placeholder="Topic" aria-label="Topic" disabled={busy} />
           <select value={count} onChange={(e) => setCount(Number(e.target.value))} aria-label="Number of cards" disabled={busy}>
             {[10, 20, 30, 40].map((n) => (
               <option key={n} value={n}>{n} cards</option>
@@ -571,21 +560,16 @@ function Generator() {
             <button className="btn-primary">Create empty deck</button>
           )}
         </form>
-        <div className="chips">
-          {SUGGEST.map((s) => (
-            <button key={s} className="chip" onClick={() => setTopic(s)} disabled={busy}>{s}</button>
-          ))}
-        </div>
         {busy && (
           <p className="gen-status" role="status">
-            <i className="spin" /> {got ? `Writing cards… ${got} so far` : 'Thinking about your topic… this can take up to a minute.'}
+            <i className="spin" /> {got ? `${got} cards…` : 'Generating…'}
           </p>
         )}
         {err && <p className="gen-err" role="alert">{err}</p>}
-        {made && <p className="gen-ok" role="status">“{made}” is ready in Your decks below.</p>}
+        {made && <p className="gen-ok" role="status">“{made}” created.</p>}
         {ready && !busy && (
           <p className="note small">
-            Or <button className="linklike" onClick={blank}>create an empty deck</button> and write the cards yourself.
+            <button className="linklike" onClick={blank}>Empty deck</button>
             {mode === 'key' && (
               <>
                 {' '}·{' '}
@@ -617,8 +601,8 @@ function Generator() {
             setMode('key')
           }}
         >
-          <h3>Turn on AI decks</h3>
-          <p className="note">Open MedPeriodic from its claude.ai link to use your Claude account, or paste an Anthropic API key. The key is saved only in this browser and sent only to Anthropic.</p>
+          <h3>AI decks</h3>
+          <p className="note">Paste an Anthropic API key. It stays in this browser.</p>
           <input type="password" autoComplete="off" value={keyDraft} onChange={(e) => setKeyDraft(e.target.value)} placeholder="sk-ant-…" aria-label="Anthropic API key" />
           <button className="btn-ghost" disabled={!keyDraft.trim()}>Save key</button>
         </form>

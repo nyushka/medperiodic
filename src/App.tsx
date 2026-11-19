@@ -254,7 +254,6 @@ export default function App() {
           </svg>
           <div>
             <strong>MedPeriodic</strong>
-            <small>Anatomy and the elements</small>
           </div>
         </button>
         <nav className="tabs" aria-label="Sections">
@@ -316,7 +315,7 @@ export default function App() {
       </main>
 
       <footer className="foot">
-        MedPeriodic is an educational reference, not medical advice. Intake values follow the US National Academies and NIH Office of Dietary Supplements for adults 19–50. 3D anatomy from BodyParts3D © DBCLS (CC BY 4.0).
+        Not medical advice. 3D anatomy: BodyParts3D © DBCLS, CC BY 4.0.
       </footer>
 
       {top && (

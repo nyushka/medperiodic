@@ -131,32 +131,23 @@ export default function Landing({ onEnter, onSignIn }: Props) {
           <br />
           down to the atom.
         </h1>
-        <p className="landing-sub">Explore 2,237 real anatomical structures in 3D, trace them down to the cells, elements and vitamins they’re made of, and test yourself with flashcards and quizzes.</p>
         <div className="landing-actions">
           <button className="landing-primary" onClick={onEnter}>
-            {progress.signedIn ? `Continue studying, ${p.name}` : 'Start exploring'}
+            Enter
             <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" /></svg>
           </button>
           {!progress.signedIn && (
-            <button className="landing-secondary" onClick={onSignIn}>
-              Sign in to track progress
-            </button>
+            <button className="landing-secondary" onClick={onSignIn}>Sign in</button>
           )}
         </div>
-        <dl className="landing-stats">
-          <div><dt>206</dt><dd>bones</dd></div>
-          <div><dt>2,237</dt><dd>3D structures</dd></div>
-          <div><dt>118</dt><dd>elements</dd></div>
-          <div><dt>2,800+</dt><dd>flashcards</dd></div>
-        </dl>
       </div>
       {!ready && (
         <div className="landing-load" role="status">
           <span style={{ width: `${Math.round(loaded * 100)}%` }} />
-          <small>Loading the 3D body · {Math.round(loaded * 100)}%</small>
+          <small>{Math.round(loaded * 100)}%</small>
         </div>
       )}
-      <p className="landing-credit">3D model: BodyParts3D © DBCLS, CC BY 4.0</p>
+      <p className="landing-credit">BodyParts3D © DBCLS, CC BY 4.0</p>
     </section>
   )
 }

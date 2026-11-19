@@ -19,6 +19,7 @@ const LAY: Record<string, string[]> = {
   tears: ['lacrimal-gland'], 'tear duct': ['lacrimal-gland'], 'eye muscles': ['muscle-sup-rectus', 'muscle-lat-rectus', 'muscle-sup-oblique'], 'blind spot': ['retina', 'cn-ii'],
   brain: ['brain', 'cerebrum'], 'gray matter': ['cerebrum'], 'grey matter': ['cerebrum'], 'white matter': ['myelin', 'corpus-callosum'], 'memory center': ['hippocampus'], 'fear center': ['amygdala'],
   'speech center': ['broca', 'wernicke'], 'brain stem': ['brainstem'], 'little brain': ['cerebellum'], 'master gland': ['pituitary'], 'third eye': ['pineal'],
+  foramen: ['foramen-magnum', 'foramen-optic', 'foramen-ovale', 'foramen-mental'], foramina: ['foramen-magnum', 'foramen-jugular', 'foramen-obturator'], 'hole in skull': ['foramen-magnum'], 'holes in skull': ['foramen-magnum', 'foramen-jugular'], 'skull holes': ['foramen-magnum'], 'ear hole': ['foramen-ext-acoustic'], 'ear canal': ['ear-canal', 'foramen-ext-acoustic'], 'scalp': ['epicranial-aponeurosis', 'muscle-frontalis'], 'face muscles': ['muscle-orb-oculi', 'muscle-zyg-major', 'muscle-orb-oris', 'muscle-frontalis'], 'facial muscles': ['muscle-orb-oculi', 'muscle-zyg-major', 'muscle-orb-oris', 'muscle-buccinator'], 'smile muscle': ['muscle-zyg-major'], 'chewing muscles': ['muscle-masseter', 'muscle-temporalis'], 'jaw muscle': ['muscle-masseter'], 'root canal': ['foramen-apical', 'teeth'],
   // Neck & trunk
   neck: ['bone-c1', 'bone-c2', 'muscle-scm', 'muscle-scalenes'], nape: ['muscle-trapezius', 'muscle-semispinalis'],
   collarbone: ['bone-clavicle'], 'collar bone': ['bone-clavicle'], 'shoulder blade': ['bone-scapula'], 'shoulder bone': ['bone-scapula', 'bone-humerus'],
@@ -85,7 +86,7 @@ const stem = (w: string) => w.replace(/(ies)$/, 'y').replace(/(es|s)$/, '')
 /** The everyday names that point at a structure (for "also called" chips). */
 export function laymanNames(id: string): string[] {
   return Object.entries(LAY)
-    .filter(([, ids]) => ids[0] === id)
+    .filter(([, ids]) => ids[0] === id && ids.length <= 2)
     .map(([k]) => k)
     .slice(0, 6)
 }

@@ -11,6 +11,8 @@ An interactive study tool that connects human anatomy to the periodic table. Exp
 | 3D model | **2,237** selectable pieces, 2.33 M triangles, 23.5 MB, loaded progressively by body system |
 | Bones | all **206** (every vertebra C1–L5, all 12 rib pairs, all 8 carpals and 7 tarsals, metacarpals, metatarsals, phalanges, ossicles, hyoid) |
 | Muscles | **184** entries (covering all 446 muscle pieces of the model), each with origin, insertion, action and nerve supply |
+| Face | **35** muscle meshes for the face and scalp (temporalis, masseter, frontalis, orbicularis oculi and oris, zygomaticus, buccinator and the rest), generated onto the model's skull by `scripts/build-face.mjs` because the source meshes have none |
+| Foramina | **29** foramina and canals with what passes through each; the visible ones (supraorbital, infraorbital, mental, mandibular, foramen magnum, ear canal) are marked on the 3D skull |
 | Joints | **26**, from skull sutures and the jaw joint to the knuckles (MCP, PIP, DIP), knee, ankle and toe joints, plus menisci, cruciate ligaments, labrum, rotator cuff, Achilles tendon and plantar fascia |
 | Cell types & blood components | **96**: red and white blood cells, platelets, neurons, glia, rods/cones, osteoblasts, hepatocytes, beta cells, sperm, egg and more, each with size, lifespan and count |
 | Organs & tissues | **174**: brain lobes, basal ganglia and brainstem parts, eye and ear parts, mouth and throat (lips, gums, palate, uvula, pharynx, epiglottis, vocal cords), heart, gut, kidneys, male and female external and internal genitals, cartilage, marrow, myelin, microbiome |

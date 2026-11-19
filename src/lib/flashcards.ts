@@ -72,7 +72,7 @@ const SECTIONS: DeckInfo[] = [
 export const SECTION_BY_ID: Record<string, DeckInfo> = Object.fromEntries(SECTIONS.map((s) => [s.id, s]))
 export const GROUPS = ['Head', 'Trunk', 'Limbs', 'Systems & cells', 'Chemistry']
 
-const JAW = new Set(['joint-tmj', 'gums', 'lips', 'palate', 'uvula', 'inferior-alveolar', 'lingual-n', 'muscle-styloglossus', 'muscle-hyoglossus', 'muscle-palatoglossus', 'muscle-intrinsic-tongue', 'muscle-lev-veli', 'muscle-tensor-veli', 'muscle-uvulae', 'muscle-risorius', 'muscle-lev-anguli', 'muscle-dep-labii', 'bone-mandible', 'bone-maxilla', 'bone-palatine', 'teeth', 'enamel', 'dentin', 'tongue', 'salivary', 'muscle-masseter', 'muscle-temporalis', 'muscle-med-pterygoid', 'muscle-lat-pterygoid', 'muscle-genioglossus', 'muscle-buccinator', 'muscle-orb-oris', 'cell-odontoblast', 'cell-ameloblast', 'cell-taste-cell', 'cell-acinar'])
+const JAW = new Set(['foramen-mental', 'foramen-mandibular', 'foramen-incisive', 'foramen-palatine', 'foramen-apical', 'joint-tmj', 'gums', 'lips', 'palate', 'uvula', 'inferior-alveolar', 'lingual-n', 'muscle-styloglossus', 'muscle-hyoglossus', 'muscle-palatoglossus', 'muscle-intrinsic-tongue', 'muscle-lev-veli', 'muscle-tensor-veli', 'muscle-uvulae', 'muscle-risorius', 'muscle-lev-anguli', 'muscle-dep-labii', 'bone-mandible', 'bone-maxilla', 'bone-palatine', 'teeth', 'enamel', 'dentin', 'tongue', 'salivary', 'muscle-masseter', 'muscle-temporalis', 'muscle-med-pterygoid', 'muscle-lat-pterygoid', 'muscle-genioglossus', 'muscle-buccinator', 'muscle-orb-oris', 'cell-odontoblast', 'cell-ameloblast', 'cell-taste-cell', 'cell-acinar'])
 const SENSE_BONES = new Set(['bone-malleus', 'bone-incus', 'bone-stapes', 'bone-lacrimal'])
 
 function sectionOf(s: Structure): string | null {
@@ -154,6 +154,10 @@ function structureCards(s: Structure, deck: string): Card[] {
     if (nerve) out.push({ id: `nerve:${s.id}`, deck, tag: 'Nerve supply', front: `Which nerve supplies the ${clean(s.name)}?`, back: nerve, ref, quiz: 'nerve' })
     if (origin && insertion && action) out.push({ id: `idm:${s.id}`, deck, tag: 'Name the muscle', front: `Origin: ${origin}\nInsertion: ${insertion}\nAction: ${action}`, back: s.name, ref, quiz: 'name:muscle' })
     if (origin && insertion) out.push({ id: `attach:${s.id}`, deck, tag: 'Origin → insertion', front: `Where does the ${clean(s.name)} attach?`, back: `Origin: ${origin}\nInsertion: ${insertion}`, ref })
+  }
+  if (s.kind === 'foramen') {
+    const passes = fact('Passes through')
+    if (passes) out.push({ id: `passes:${s.id}`, deck, tag: 'What passes through', front: `What passes through the ${clean(s.name).toLowerCase()}?`, back: passes, ref, quiz: 'passes' })
   }
   if (s.kind === 'bone') {
     const type = fact('Bone type')

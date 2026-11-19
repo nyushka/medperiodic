@@ -303,7 +303,6 @@ export default function Viewer3D({ highlight, focusKey, resetKey, calloutLabel, 
           ))}
         </svg>
 
-        <p className="hint-line">Drag to rotate · scroll to zoom · right-drag to pan · click any structure</p>
 
         {hover && (
           <div className="tip" style={{ left: hover.x + 14, top: hover.y + 14 }}>
@@ -401,7 +400,7 @@ export default function Viewer3D({ highlight, focusKey, resetKey, calloutLabel, 
           </button>
         ))}
       </div>
-      <p className="credit">3D model: BodyParts3D © DBCLS, CC BY 4.0, via Human Atlas and open-anatomy-3d.</p>
+      <p className="credit">BodyParts3D © DBCLS, CC BY 4.0</p>
     </div>
   )
 }

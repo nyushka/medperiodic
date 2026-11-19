@@ -169,7 +169,6 @@ function RegionPanel({ region, onSelect }: { region: Region; onSelect: (id: stri
       <header className="detail-head">
         <div className="chips"><span className="chip">Body region</span></div>
         <h2>{REGIONS[region]}</h2>
-        <p className="lede">{items.length} structures catalogued in this region. Pick one to see its elements, cells and connections.</p>
       </header>
       {groups.map(([kind, list]) => (
         <section className="card" key={kind}>
@@ -194,11 +193,9 @@ function Welcome({ onSelect }: { onSelect: (id: string) => void }) {
   return (
     <article className="detail">
       <header className="detail-head">
-        <h2>Pick any part of the body</h2>
-        <p className="lede">Rotate the 3D body, pick a body system, then tap any structure: all 2,237 pieces are selectable. Use the hand and foot views to reach individual carpals and phalanges.</p>
+        <h2>Select a structure</h2>
       </header>
       <section className="card">
-        <h3>Good places to start</h3>
         <div className="pill-row">
           {picks.map((p) => (
             <button key={p} className="pill" onClick={() => onSelect(p)} style={{ '--c': SYSTEMS[BY_ID[p].system].color } as React.CSSProperties}>

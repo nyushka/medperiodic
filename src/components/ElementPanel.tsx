@@ -6,7 +6,6 @@ import { structuresForElement } from '../data'
 import { SYSTEMS } from '../data/types'
 import { BLOCK_OF, SHELL_NAMES, shellCounts, unpairedElectrons, valenceElectrons } from '../lib/electrons'
 import { Bohr, Configs, Orbitals } from './Atom'
-import { Fig, HowToReadConfig, HowToReadIntake } from './Learn'
 import { LearnedButton } from './Profile'
 
 const Atom3D = lazy(() => import('./Atom3D'))
@@ -131,9 +130,7 @@ export default function ElementPanel({ symbol, onVitamin, onStructure }: Props) 
               <div>
                 <div className="lbl">Valence orbitals</div>
                 <Orbitals z={e.z} valenceOnly />
-                <Fig n="1">Each box is one orbital; ↑↓ are paired electrons with opposite spin.</Fig>
               </div>
-              <HowToReadConfig />
             </div>
           </section>
           <dl className="props">
@@ -203,7 +200,6 @@ export default function ElementPanel({ symbol, onVitamin, onStructure }: Props) 
               <List items={b.blockers} tone="def" />
             </section>
           )}
-          {!toxic && <HowToReadIntake />}
         </div>
       )}
 

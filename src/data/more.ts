@@ -189,6 +189,57 @@ const VESSELS: Structure[] = [
   vs({ id: 'small-saphenous', name: 'Small saphenous vein', region: 'leg', desc: 'The superficial vein running up the back of the calf from the outer ankle to the knee pit, a common site of varicose veins.', count: 2 }),
 ]
 
+
+// ---------------- Foramina & canals ----------------
+type F = [id: string, name: string, region: Region, bone: string, passes: string, desc: string, count?: number]
+const F_DATA: F[] = [
+  ['magnum', 'Foramen magnum', 'head', 'Occipital bone', 'Medulla oblongata, vertebral arteries, spinal roots of the accessory nerve (CN XI)', 'The largest opening in the skull, where the brainstem becomes the spinal cord. It sits under the skull rather than behind it, one sign that humans walk upright.', 1],
+  ['optic', 'Optic canal', 'head', 'Sphenoid bone (lesser wing)', 'Optic nerve (CN II), ophthalmic artery', 'A short tunnel from the back of each eye socket into the skull.', 2],
+  ['sup-orbital-fissure', 'Superior orbital fissure', 'head', 'Sphenoid bone', 'Oculomotor (III), trochlear (IV), ophthalmic (V1) and abducens (VI) nerves; superior ophthalmic vein', 'A slit at the back of the eye socket. Every nerve that moves the eye passes through it.', 2],
+  ['inf-orbital-fissure', 'Inferior orbital fissure', 'head', 'Between sphenoid and maxilla', 'Infraorbital and zygomatic nerves (V2), infraorbital vessels, inferior ophthalmic vein', 'A gap in the floor of the eye socket opening toward the cheek and jaw.', 2],
+  ['rotundum', 'Foramen rotundum', 'head', 'Sphenoid bone', 'Maxillary nerve (V2)', 'A small round tunnel carrying the nerve for the cheek, upper lip and upper teeth.', 2],
+  ['ovale', 'Foramen ovale', 'head', 'Sphenoid bone', 'Mandibular nerve (V3), accessory meningeal artery, lesser petrosal nerve, emissary vein', 'An oval opening in the skull base carrying the nerve for chewing and the lower face.', 2],
+  ['spinosum', 'Foramen spinosum', 'head', 'Sphenoid bone', 'Middle meningeal artery and vein, meningeal branch of V3', 'A tiny opening beside the foramen ovale. A blow to the temple can tear the artery that comes through it, causing an epidural hematoma.', 2],
+  ['lacerum', 'Foramen lacerum', 'head', 'Between sphenoid, temporal and occipital bones', 'Filled with cartilage in life; the nerve of the pterygoid canal crosses it and the internal carotid artery runs over it', 'A ragged gap in the skull base that is mostly plugged with cartilage.', 2],
+  ['carotid-canal', 'Carotid canal', 'head', 'Temporal bone (petrous part)', 'Internal carotid artery and its sympathetic nerve plexus', 'A bent tunnel that brings the main blood supply of the brain into the skull.', 2],
+  ['jugular', 'Jugular foramen', 'head', 'Between temporal and occipital bones', 'Glossopharyngeal (IX), vagus (X) and accessory (XI) nerves; internal jugular vein; inferior petrosal sinus', 'The exit for most of the blood draining the brain and for three cranial nerves.', 2],
+  ['hypoglossal', 'Hypoglossal canal', 'head', 'Occipital bone', 'Hypoglossal nerve (CN XII)', 'A canal just above the occipital condyle carrying the nerve that moves the tongue.', 2],
+  ['int-acoustic', 'Internal acoustic meatus', 'head', 'Temporal bone (petrous part)', 'Facial (VII) and vestibulocochlear (VIII) nerves, labyrinthine artery', 'A canal leading from inside the skull to the inner ear.', 2],
+  ['stylomastoid', 'Stylomastoid foramen', 'head', 'Temporal bone', 'Facial nerve (CN VII), stylomastoid artery', 'Where the facial nerve leaves the skull, just behind the ear, before fanning out to the muscles of expression.', 2],
+  ['cribriform', 'Cribriform plate foramina', 'head', 'Ethmoid bone', 'Olfactory nerve fibres (CN I)', 'A sieve of tiny holes in the roof of the nose. A fracture here can leak cerebrospinal fluid from the nose and take away the sense of smell.', 1],
+  ['supraorbital', 'Supraorbital foramen', 'head', 'Frontal bone', 'Supraorbital nerve (V1) and vessels', 'A notch or hole in the upper rim of the eye socket. Pressing here is painful because the nerve is so close to the surface.', 2],
+  ['infraorbital', 'Infraorbital foramen', 'head', 'Maxilla', 'Infraorbital nerve (V2) and vessels', 'Opens below the eye socket. Dentists can numb the upper front teeth and lip here.', 2],
+  ['mental', 'Mental foramen', 'head', 'Mandible', 'Mental nerve (V3) and vessels', 'Opens on the outside of the lower jaw below the second premolar and carries feeling from the chin and lower lip.', 2],
+  ['mandibular', 'Mandibular foramen', 'head', 'Mandible (inner ramus)', 'Inferior alveolar nerve and vessels', 'Opens on the inner side of the jaw. The usual dental injection for the lower teeth is aimed here.', 2],
+  ['incisive', 'Incisive foramen', 'head', 'Maxilla', 'Nasopalatine nerve, branches of the sphenopalatine artery', 'Opens in the roof of the mouth just behind the upper front teeth.', 1],
+  ['palatine', 'Greater & lesser palatine foramina', 'head', 'Palatine bone', 'Greater and lesser palatine nerves and vessels', 'Openings at the back corners of the hard palate supplying the roof of the mouth.', 4],
+  ['ext-acoustic', 'External acoustic meatus', 'head', 'Temporal bone', 'Sound, on its way to the eardrum', 'The bony part of the ear canal.', 2],
+  ['apical', 'Apical foramen', 'head', 'Tip of each tooth root', 'Nerve, artery and vein of the pulp', 'The tiny opening at the root tip where the tooth’s nerve and blood supply enter. Root canal treatment seals it.', 32],
+  ['vertebral', 'Vertebral foramen', 'back', 'Every vertebra', 'Spinal cord, its meninges and blood vessels', 'The ring in each vertebra. Stacked together they form the vertebral canal that protects the spinal cord.', 24],
+  ['intervertebral', 'Intervertebral foramina', 'back', 'Between neighbouring vertebrae', 'Spinal nerve roots and ganglia, spinal arteries and veins', 'Side openings between vertebrae. When a disc bulges or bone spurs grow into them, the nerve is pinched.', 62],
+  ['transverse', 'Transverse foramina', 'neck', 'Cervical vertebrae (C1–C7)', 'Vertebral artery and vein (artery usually from C6 upward)', 'Holes in the side processes of the neck vertebrae: a protected route for the arteries that feed the back of the brain.', 14],
+  ['sacral', 'Sacral foramina', 'pelvis', 'Sacrum', 'Ventral and dorsal rami of sacral nerves S1–S4', 'Four pairs on the front and four on the back of the sacrum.', 16],
+  ['obturator', 'Obturator foramen', 'pelvis', 'Hip bone (pubis and ischium)', 'Obturator nerve, artery and vein (through the obturator canal)', 'The largest foramen in the skeleton, almost completely closed by a membrane except for a small canal.', 2],
+  ['sciatic', 'Greater & lesser sciatic foramina', 'pelvis', 'Hip bone with the sacrospinous and sacrotuberous ligaments', 'Greater: piriformis, sciatic nerve, gluteal nerves and vessels, pudendal nerve. Lesser: obturator internus tendon, pudendal nerve and internal pudendal vessels', 'The two gateways from the pelvis to the buttock and perineum.', 4],
+  ['nutrient', 'Nutrient foramina', 'whole', 'Long bones (shaft)', 'Nutrient artery and vein', 'Small holes in the shaft of long bones that let blood reach the marrow and inner bone.'],
+]
+const foramina: Structure[] = F_DATA.map(([id, name, region, bone, passes, desc, count]) => ({
+  id: `foramen-${id}`,
+  name,
+  kind: 'foramen',
+  system: 'skeletal',
+  region,
+  desc,
+  count,
+  facts: [
+    ['Bone', bone],
+    ['Passes through', passes],
+  ],
+}))
+
+const scalp = make('tissue', 'muscular')
+const SCALP: Structure[] = [scalp({ id: 'epicranial-aponeurosis', name: 'Epicranial aponeurosis (galea)', region: 'head', desc: 'A tough tendon sheet over the top of the skull joining the frontalis in front to the occipitalis behind. Scalp wounds gape when it is cut across.' })]
+
 // ---------------- Nerves ----------------
 type N = [id: string, name: string, region: Region, roots: string, supplies: string, desc: string, count?: number]
 const N_DATA: N[] = [
@@ -262,7 +313,7 @@ const NERVES: Structure[] = N_DATA.map(([id, name, region, roots, supplies, desc
   nv({ id, name, region, desc, count, facts: [['Roots / origin', roots], ['Supplies', supplies]] }),
 )
 
-export const MORE: Structure[] = [...joints, ...JOINT_PARTS, ...REPRO, ...HEAD, ...BRAIN, ...TRUNK, ...VESSELS, ...NERVES]
+export const MORE: Structure[] = [...joints, ...JOINT_PARTS, ...REPRO, ...HEAD, ...BRAIN, ...TRUNK, ...VESSELS, ...NERVES, ...foramina, ...SCALP]
 
 /** Cross-links for the new parts (made two-way in data/index.ts). */
 export const MORE_LINKS: Record<string, string[]> = {
@@ -307,6 +358,36 @@ export const MORE_LINKS: Record<string, string[]> = {
   'tibial-n': ['sural', 'plantar-nerves'],
   pudendal: ['dorsal-genital', 'inferior-rectal'],
   'cn-v': ['v1', 'v2', 'v3'],
+  'bone-occipital': ['foramen-magnum', 'foramen-hypoglossal', 'foramen-jugular'],
+  'bone-sphenoid': ['foramen-optic', 'foramen-sup-orbital-fissure', 'foramen-rotundum', 'foramen-ovale', 'foramen-spinosum'],
+  'bone-temporal': ['foramen-carotid-canal', 'foramen-int-acoustic', 'foramen-stylomastoid', 'foramen-ext-acoustic'],
+  'bone-mandible': ['foramen-mental', 'foramen-mandibular'],
+  'bone-maxilla': ['foramen-infraorbital', 'foramen-incisive'],
+  'bone-frontal': ['foramen-supraorbital'],
+  'bone-ethmoid': ['foramen-cribriform'],
+  'bone-sacrum': ['foramen-sacral'],
+  'bone-hip': ['foramen-obturator', 'foramen-sciatic'],
+  'foramen-magnum': ['spinal-cord', 'medulla', 'cn-xi'],
+  'foramen-optic': ['cn-ii'],
+  'foramen-ovale': ['v3'],
+  'foramen-rotundum': ['v2'],
+  'foramen-mental': ['inferior-alveolar'],
+  'foramen-mandibular': ['inferior-alveolar'],
+  'foramen-infraorbital': ['v2'],
+  'foramen-supraorbital': ['v1'],
+  'foramen-stylomastoid': ['cn-vii', 'facial-branches'],
+  'foramen-jugular': ['cn-ix', 'cn-x', 'cn-xi', 'jugular'],
+  'foramen-hypoglossal': ['cn-xii'],
+  'foramen-int-acoustic': ['cn-vii', 'cn-viii'],
+  'foramen-cribriform': ['cn-i'],
+  'foramen-carotid-canal': ['carotid'],
+  'foramen-transverse': ['vertebral-a'],
+  'foramen-obturator': ['obturator-n'],
+  'foramen-sciatic': ['sciatic', 'pudendal', 'muscle-piriformis'],
+  'foramen-apical': ['teeth'],
+  'foramen-vertebral': ['spinal-cord'],
+  'foramen-intervertebral': ['cervical-spinal', 'thoracic-spinal', 'lumbar-spinal'],
+  'epicranial-aponeurosis': ['muscle-frontalis', 'muscle-occipitalis'],
   v3: ['inferior-alveolar', 'lingual-n'],
   'cn-vii': ['chorda-tympani', 'facial-branches'],
   'cn-x': ['recurrent-laryngeal', 'superior-laryngeal', 'cardiac-plexus', 'celiac-plexus'],

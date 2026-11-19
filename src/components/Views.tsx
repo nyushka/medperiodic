@@ -1,8 +1,7 @@
 import { searchStructures } from '../data/aliases'
 import { useMemo, useState } from 'react'
-import { ALL, COUNTS } from '../data'
+import { ALL } from '../data'
 import { BODY_BY_SYMBOL, BODY_ELEMENTS, ROLE_INFO, type BodyRole } from '../data/bodyElements'
-import { TOTAL_BONES } from '../data/bones'
 import { CATEGORY_COLORS, gridPos, PERIODIC, type ElementCategory } from '../data/periodic'
 import { KINDS, SYSTEMS, type Kind, type Structure, type System } from '../data/types'
 import { VITAMINS } from '../data/vitamins'
@@ -24,7 +23,6 @@ export function ElementsView({ onElement }: { onElement: (s: string) => void }) 
       <section className="hero-band">
         <div>
           <h1>The periodic table of you</h1>
-          <p className="lede">About 60 elements turn up in the human body. Around 25 are known to be essential. Tap any element for its electron configuration, Bohr model, where it lives in your body, deficiency signs, and how to get more.</p>
         </div>
         <div className="comp">
           <div className="lbl">Body composition by mass (70 kg adult)</div>
@@ -97,7 +95,6 @@ export function ElementsView({ onElement }: { onElement: (s: string) => void }) 
         {(Object.keys(ROLE_INFO) as BodyRole[]).map((r) => (
           <div key={r} className="role-card" style={{ '--c': ROLE_INFO[r].color } as React.CSSProperties}>
             <h3>{ROLE_INFO[r].label}</h3>
-            <p>{ROLE_INFO[r].blurb}</p>
             <div className="chip-row">
               {BODY_ELEMENTS.filter((e) => e.role === r).map((e) => (
                 <button key={e.symbol} className="sym-btn" onClick={() => onElement(e.symbol)}>
@@ -118,8 +115,7 @@ export function VitaminsView({ onVitamin }: { onVitamin: (id: string) => void })
     <div className="view">
       <section className="hero-band">
         <div>
-          <h1>The 13 vitamins</h1>
-          <p className="lede">Vitamins are carbon compounds your body can’t make in sufficient amounts. Many work alongside minerals: vitamin D pulls in calcium, vitamin C unlocks plant iron, and B12 is built around a cobalt atom.</p>
+          <h1>Vitamins</h1>
         </div>
       </section>
       <div className="vit-grid">
@@ -152,18 +148,9 @@ export function IndexView({ selectedId, onSelect, extra = [] }: { selectedId: st
 
   return (
     <div className="index">
-      <div className="index-stats">
-        <span><b>{TOTAL_BONES}</b> bones</span>
-        <span><b>{COUNTS.muscle}</b> muscles</span>
-        <span><b>{(COUNTS.cell ?? 0) + (COUNTS.blood ?? 0)}</b> cell types & blood parts</span>
-        <span><b>{COUNTS.joint}</b> joints</span>
-        <span><b>{COUNTS.nerve}</b> nerves</span>
-        <span><b>{COUNTS.organ}</b> organs & parts</span>
-        <span><b>{ALL.length}</b> structures total</span>
-      </div>
       <label className="search">
         <span className="sr">Search the body</span>
-        <input id="search" type="search" placeholder="Search any name: femur, kneecap, knuckles, belly button…" value={q} onChange={(e) => setQ(e.target.value)} />
+        <input id="search" type="search" placeholder="Search" value={q} onChange={(e) => setQ(e.target.value)} />
       </label>
       <div className="filters">
         <select id="kind" value={kind} onChange={(e) => setKind(e.target.value as Kind | 'all')} aria-label="Type">

@@ -1,4 +1,4 @@
-export type Kind = 'bone' | 'joint' | 'muscle' | 'organ' | 'cell' | 'vessel' | 'nerve' | 'skin' | 'tissue' | 'blood'
+export type Kind = 'bone' | 'joint' | 'foramen' | 'muscle' | 'organ' | 'cell' | 'vessel' | 'nerve' | 'skin' | 'tissue' | 'blood'
 
 export type System =
   | 'skeletal'
@@ -66,6 +66,7 @@ export const SYSTEMS: Record<System, { label: string; color: string }> = {
 export const KINDS: Record<Kind, { label: string; plural: string }> = {
   bone: { label: 'Bone', plural: 'Bones' },
   joint: { label: 'Joint', plural: 'Joints' },
+  foramen: { label: 'Foramen', plural: 'Foramina & canals' },
   muscle: { label: 'Muscle', plural: 'Muscles' },
   organ: { label: 'Organ', plural: 'Organs' },
   cell: { label: 'Cell', plural: 'Cells' },
@@ -114,6 +115,11 @@ export const KIND_ELEMENTS: Record<Kind, Record<string, string>> = {
     Sr: 'Strontium swaps in for some calcium in the mineral',
     B: 'May reduce urinary loss of calcium and magnesium',
     Pb: 'Lead is stored in bone, mimicking calcium (toxic)',
+  },
+  foramen: {
+    Ca: 'The rim of the opening is calcium hydroxyapatite bone',
+    P: 'Phosphate, the other half of bone mineral',
+    N: 'Collagen lines the opening as periosteum',
   },
   joint: {
     ...BASE,

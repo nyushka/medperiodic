@@ -96,7 +96,7 @@ export default function StudyView({ onStructure, onElement, onVitamin }: Props) 
         </div>
         {!progress.signedIn && (
           <div className="study-cta">
-            <p>You’re studying as a guest. Create a profile to keep your progress under your name.</p>
+            <p>Studying as a guest.</p>
             <button className="btn-primary" onClick={openSignIn}>Create profile</button>
           </div>
         )}
@@ -126,7 +126,7 @@ export default function StudyView({ onStructure, onElement, onVitamin }: Props) 
         <section className="block">
           <h3>Recently viewed</h3>
           {recent.length === 0 ? (
-            <p className="note">Nothing yet. Open any body part, element or vitamin and it appears here.</p>
+            <p className="note">Nothing yet.</p>
           ) : (
             <div className="link-list">
               {recent.map(([k, t]) => {
@@ -147,7 +147,7 @@ export default function StudyView({ onStructure, onElement, onVitamin }: Props) 
         <section className="block">
           <h3>Learned <span className="count">{learned.length}</span></h3>
           {learned.length === 0 ? (
-            <p className="note">Use “Mark as learned” on any page to build your list.</p>
+            <p className="note">Nothing yet.</p>
           ) : (
             <div className="pill-row">
               {learned.sort((a, b) => b[1] - a[1]).map(([k]) => (
@@ -164,7 +164,6 @@ export default function StudyView({ onStructure, onElement, onVitamin }: Props) 
               <button key={s.id} className="pill" onClick={() => onStructure(s.id)}>{s.name}</button>
             ))}
           </div>
-          <p className="note">Picked from the body systems you’ve explored least.</p>
         </section>
       </div>
 

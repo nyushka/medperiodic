@@ -51,6 +51,7 @@ function colorFor(p: PartMeta): { color: string; opacity?: number; rough?: numbe
     case 'skeleton':
       if (/tooth/i.test(n)) return { color: '#f5f0e2', rough: 0.35, coat: 0.4 }
       if (/gingiva/i.test(n)) return { color: '#d9817f', rough: 0.5 }
+      if (/foramen|meatus/i.test(n)) return { color: '#4a1c20', rough: 0.45, coat: 0.3 }
       if (/cartilage|disk|disc/i.test(n)) return { color: '#a9c8d8', rough: 0.45, coat: 0.3 }
       return { color: '#e7dabf', rough: 0.72 }
     case 'muscles':

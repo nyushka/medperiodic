@@ -46,6 +46,7 @@ export const GLOSSARY: Record<string, string> = {
 
 const KIND_TERMS: Record<Kind, string[]> = {
   bone: ['Long bone', 'Short bone', 'Flat bone', 'Irregular bone', 'Sesamoid bone', 'Hydroxyapatite', 'Collagen'],
+  foramen: ['Innervation', 'Collagen'],
   joint: ['Synovial joint', 'Articular cartilage', 'Ligament', 'Flexion', 'Extension', 'Abduction / adduction'],
   muscle: ['Origin', 'Insertion', 'Action', 'Innervation', 'Flexion', 'Extension', 'Abduction / adduction'],
   organ: ['Mitochondria', 'Cofactor', 'ATP'],

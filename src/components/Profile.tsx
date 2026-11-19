@@ -38,8 +38,7 @@ export function SignInDialog({ onClose }: { onClose: () => void }) {
     <div className="modal-wrap" onClick={onClose}>
       <div className="modal" role="dialog" aria-modal="true" aria-labelledby="signin-title" onClick={(e) => e.stopPropagation()}>
         <button className="modal-x" onClick={onClose} aria-label="Close">✕</button>
-        <h2 id="signin-title">{creating ? 'Create your study profile' : 'Who’s studying?'}</h2>
-        <p className="modal-lede">Track the structures, elements and vitamins you explore, mark what you’ve learned and keep a daily streak.</p>
+        <h2 id="signin-title">{creating ? 'New profile' : 'Profiles'}</h2>
 
         {!creating && (
           <div className="profile-list">
@@ -98,7 +97,7 @@ export function SignInDialog({ onClose }: { onClose: () => void }) {
             )}
           </form>
         )}
-        <p className="fine">Saved privately in this browser on this device. No password or email needed.</p>
+        <p className="fine">Saved in this browser.</p>
       </div>
     </div>
   )

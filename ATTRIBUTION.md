@@ -30,4 +30,4 @@ The models are for education and visualisation and are not suitable for diagnosi
 
 ## Fonts
 
-Josefin Sans and Lora, served by Google Fonts under the SIL Open Font License.
+Cormorant Garamond and Karla, served by Google Fonts under the SIL Open Font License.

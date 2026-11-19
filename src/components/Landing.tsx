@@ -24,7 +24,7 @@ export default function Landing({ onEnter, onSignIn }: Props) {
     let cancelled = false
     const particles = new THREE.Points(
       new THREE.BufferGeometry(),
-      new THREE.PointsMaterial({ color: 0x8fdcff, size: 0.008, transparent: true, opacity: 0.55, depthWrite: false, blending: THREE.AdditiveBlending }),
+      new THREE.PointsMaterial({ color: 0xe8dcdc, size: 0.007, transparent: true, opacity: 0.35, depthWrite: false, blending: THREE.AdditiveBlending }),
     )
     // Drifting particles around the body
     const N = 700
@@ -59,15 +59,15 @@ export default function Landing({ onEnter, onSignIn }: Props) {
     // Dark stage with cool rim lighting
     scene.renderer.toneMappingExposure = 0.95
     scene.scene.environmentIntensity = 0.3
-    scene.scene.fog = new THREE.FogExp2(0x05080c, 0.09)
+    scene.scene.fog = new THREE.FogExp2(0x0a0a0b, 0.09)
     for (const c of [...scene.scene.children]) {
       if ((c as THREE.HemisphereLight).isHemisphereLight) (c as THREE.HemisphereLight).intensity = 0.3
       if ((c as THREE.DirectionalLight).isDirectionalLight) (c as THREE.DirectionalLight).intensity *= 0.6
       if ((c as THREE.Mesh).isMesh && (c as THREE.Mesh).geometry.type === 'PlaneGeometry') c.visible = false
     }
-    const rimA = new THREE.DirectionalLight(0x37d4ff, 3.2)
+    const rimA = new THREE.DirectionalLight(0xd23a44, 3.0)
     rimA.position.set(-2.4, 2.2, -2.6)
-    const rimB = new THREE.DirectionalLight(0x2a62ff, 2.0)
+    const rimB = new THREE.DirectionalLight(0x9a9aa2, 1.6)
     rimB.position.set(2.6, 1.2, -2.2)
     scene.scene.add(rimA, rimB, particles)
     // Camera: slow 360° turntable; the visitor can drag to spin it

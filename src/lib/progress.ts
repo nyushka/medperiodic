@@ -27,7 +27,7 @@ interface Store {
 
 const KEY = 'mp-progress-v1'
 export const GUEST = 'guest'
-export const PROFILE_COLORS = ['#8db6ea', '#e08c5e', '#62c193', '#c98fe0', '#e0c25e', '#e07d82']
+export const PROFILE_COLORS = ['#e0646c', '#8db6ea', '#e08c5e', '#62c193', '#c98fe0', '#e0c25e', '#e07d82']
 
 const blank = (id: string, name: string, color: string): Profile => ({ id, name, color, created: Date.now(), seen: {}, learned: {}, days: [] })
 

@@ -37,7 +37,7 @@ type Screen =
   | { mode: 'quiz'; title: string; color: string; deckId: string; items: QuizItem[] }
   | { mode: 'browse'; title: string; color: string; cards: Card[]; deck?: CustomDeck }
 
-const CUSTOM_COLOR = '#8db6ea'
+const CUSTOM_COLOR = '#ad2831'
 
 function customInfo(d: CustomDeck): DeckInfo {
   return { id: d.id, label: d.title, blurb: `${d.source === 'ai' ? 'AI deck' : 'Your deck'} · ${d.topic}${d.level ? ` · ${d.level}` : ''}`, color: CUSTOM_COLOR, group: 'Custom', custom: d }
@@ -109,7 +109,7 @@ export default function StudyMode({ tab, onTab, onStructure, onElement, onVitami
           ))}
         </nav>
         {allDue.length > 0 && tab !== 'progress' && (
-          <button className="btn-primary" onClick={() => setScreen({ mode: 'review', title: 'Everything due', color: '#8db6ea', cards: allDue.sort((a, b) => srs[a.id].due - srs[b.id].due) })}>
+          <button className="btn-primary" onClick={() => setScreen({ mode: 'review', title: 'Everything due', color: '#ad2831', cards: allDue.sort((a, b) => srs[a.id].due - srs[b.id].due) })}>
             Review all {allDue.length} due
           </button>
         )}

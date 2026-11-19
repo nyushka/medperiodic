@@ -3,14 +3,12 @@ import { ALL, getStructure } from '../data'
 import { BODY_ELEMENTS } from '../data/bodyElements'
 import { BY_SYMBOL } from '../data/periodic'
 import { SYSTEMS, type System } from '../data/types'
-import { VITAMINS, VITAMIN_BY_ID } from '../data/vitamins'
 import { progress, streak, useProgress, useProgressUI } from '../lib/progress'
 import { Avatar } from './Profile'
 
 interface Props {
   onStructure: (id: string) => void
   onElement: (s: string) => void
-  onVitamin: (id: string) => void
 }
 
 const ago = (ms: number) => {
@@ -41,7 +39,7 @@ function Ring({ value, total, label, color }: { value: number; total: number; la
   )
 }
 
-export default function StudyView({ onStructure, onElement, onVitamin }: Props) {
+export default function StudyView({ onStructure, onElement }: Props) {
   const p = useProgress()
   const { openSignIn } = useProgressUI()
   const [confirmReset, setConfirmReset] = useState(false)
@@ -57,26 +55,15 @@ export default function StudyView({ onStructure, onElement, onVitamin }: Props) 
     return out.filter((r) => r.total > 0).sort((a, b) => b.done / b.total - a.done / a.total)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [p.seen])
-  const suggestions = useMemo(() => {
-    const weakest = [...bySystem].sort((a, b) => a.done / a.total - b.done / b.total).slice(0, 3).map((r) => r.sys)
-    return ALL.filter((s) => weakest.includes(s.system) && !structureIds.has(s.id) && !s.id.startsWith('mesh-'))
-      .sort((a, b) => (a.id < b.id ? -1 : 1))
-      .filter((_, i) => i % 7 === 0)
-      .slice(0, 6)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [p.seen])
-
   const open = (key: string) => {
     const [type, id] = [key.slice(0, key.indexOf(':')), key.slice(key.indexOf(':') + 1)]
     if (type === 'structure') onStructure(id)
-    else if (type === 'element') onElement(id)
-    else onVitamin(id)
+    else onElement(id)
   }
   const name = (key: string) => {
     const [type, id] = [key.slice(0, key.indexOf(':')), key.slice(key.indexOf(':') + 1)]
     if (type === 'structure') return { title: getStructure(id)?.name ?? id, sub: 'Anatomy' }
-    if (type === 'element') return { title: `${BY_SYMBOL[id]?.name ?? id} (${id})`, sub: 'Element' }
-    return { title: VITAMIN_BY_ID[id]?.name ?? id, sub: 'Vitamin' }
+    return { title: `${BY_SYMBOL[id]?.name ?? id} (${id})`, sub: 'Element' }
   }
   const recent = [...seen].sort((a, b) => b[1] - a[1]).slice(0, 10)
   const days = streak(p.days)
@@ -105,7 +92,6 @@ export default function StudyView({ onStructure, onElement, onVitamin }: Props) 
       <section className="rings">
         <Ring value={has('structure')} total={ALL.length} label="Body structures" color="#e08c5e" />
         <Ring value={seen.filter(([k]) => k.startsWith('element:') && BODY_ELEMENTS.some((e) => `element:${e.symbol}` === k)).length} total={BODY_ELEMENTS.length} label="Body elements" color="#8db6ea" />
-        <Ring value={has('vitamin')} total={VITAMINS.length} label="Vitamins" color="#e0c25e" />
         <Ring value={learned.length} total={Math.max(learned.length, seen.length)} label="Learned of explored" color="#62c193" />
       </section>
 
@@ -157,14 +143,6 @@ export default function StudyView({ onStructure, onElement, onVitamin }: Props) 
           )}
         </section>
 
-        <section className="block">
-          <h3>Suggested next</h3>
-          <div className="pill-row">
-            {suggestions.map((s) => (
-              <button key={s.id} className="pill" onClick={() => onStructure(s.id)}>{s.name}</button>
-            ))}
-          </div>
-        </section>
       </div>
 
       <footer className="study-foot">
@@ -177,7 +155,6 @@ export default function StudyView({ onStructure, onElement, onVitamin }: Props) 
             <button className="btn-ghost" onClick={() => setConfirmReset(false)}>Cancel</button>
           </span>
         )}
-        <span className="fine">Progress is saved in this browser on this device.</span>
       </footer>
     </div>
   )

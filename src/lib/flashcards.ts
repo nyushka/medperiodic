@@ -2,7 +2,6 @@ import { ALL } from '../data'
 import { BODY_ELEMENTS, ROLE_INFO } from '../data/bodyElements'
 import { BY_SYMBOL } from '../data/periodic'
 import { KINDS, type Structure } from '../data/types'
-import { VITAMINS } from '../data/vitamins'
 import { configuration, shorthand, subshellLabel } from './electrons'
 import type { ItemType } from './progress'
 
@@ -66,11 +65,10 @@ const SECTIONS: DeckInfo[] = [
   { id: 'cells', label: 'Cells', blurb: 'Every major cell type: size, lifespan and job', color: '#5fb3c9', group: 'Systems & cells' },
   { id: 'skin', label: 'Skin, hair & nails', blurb: 'Layers of the skin, follicles, glands and receptors', color: '#c48a64', group: 'Systems & cells' },
   { id: 'tissues', label: 'Tissues', blurb: 'Cartilage, tendons, fat, connective tissue', color: '#8d96a5', group: 'Systems & cells' },
-  { id: 'elements', label: 'Elements of the body', blurb: 'Electron configurations, deficiencies and food sources', color: '#2e9466', group: 'Chemistry' },
-  { id: 'vitamins', label: 'Vitamins', blurb: 'Deficiency diseases, chemical names and sources', color: '#ff9f43', group: 'Chemistry' },
+  { id: 'elements', label: 'Elements of the body', blurb: 'Electron configurations, roles and deficiencies', color: '#2e9466', group: 'Biochemistry' },
 ]
 export const SECTION_BY_ID: Record<string, DeckInfo> = Object.fromEntries(SECTIONS.map((s) => [s.id, s]))
-export const GROUPS = ['Head', 'Trunk', 'Limbs', 'Systems & cells', 'Chemistry']
+export const GROUPS = ['Head', 'Trunk', 'Limbs', 'Systems & cells', 'Biochemistry']
 
 const JAW = new Set(['foramen-mental', 'foramen-mandibular', 'foramen-incisive', 'foramen-palatine', 'foramen-apical', 'joint-tmj', 'gums', 'lips', 'palate', 'uvula', 'inferior-alveolar', 'lingual-n', 'muscle-styloglossus', 'muscle-hyoglossus', 'muscle-palatoglossus', 'muscle-intrinsic-tongue', 'muscle-lev-veli', 'muscle-tensor-veli', 'muscle-uvulae', 'muscle-risorius', 'muscle-lev-anguli', 'muscle-dep-labii', 'bone-mandible', 'bone-maxilla', 'bone-palatine', 'teeth', 'enamel', 'dentin', 'tongue', 'salivary', 'muscle-masseter', 'muscle-temporalis', 'muscle-med-pterygoid', 'muscle-lat-pterygoid', 'muscle-genioglossus', 'muscle-buccinator', 'muscle-orb-oris', 'cell-odontoblast', 'cell-ameloblast', 'cell-taste-cell', 'cell-acinar'])
 const SENSE_BONES = new Set(['bone-malleus', 'bone-incus', 'bone-stapes', 'bone-lacrimal'])
@@ -203,32 +201,12 @@ function elementCards(): Card[] {
     out.push({ id: `elname:${b.symbol}`, deck, tag: `Name the element · ${ROLE_INFO[b.role].label}`, front: hidden, back: `${e.name} (${e.symbol})`, ref, quiz: 'element' })
     out.push({ id: `def:${b.symbol}`, deck, tag: toxic ? 'Health effects' : 'Deficiency', front: toxic ? `What does too much ${e.name.toLowerCase()} do to the body?` : `Signs of ${e.name.toLowerCase()} deficiency?`, back: (toxic ? b.excess : b.deficiency).slice(0, 3).join('\n'), ref })
     if (!toxic) {
-      out.push({ id: `rda:${b.symbol}`, deck, tag: 'Daily need', front: `How much ${e.name.toLowerCase()} does an adult need per day?`, back: b.rda, ref, quiz: 'rda' })
-      out.push({ id: `src:${b.symbol}`, deck, tag: 'Food sources', front: `Name three good food sources of ${e.name.toLowerCase()}.`, back: b.sources.slice(0, 3).map(([f]) => f).join(', '), ref, quiz: 'sources' })
       if (b.atRisk.length) out.push({ id: `risk:${b.symbol}`, deck, tag: 'Who runs low', front: `Who is most likely to run low on ${e.name.toLowerCase()}?`, back: b.atRisk.slice(0, 3).join('\n'), ref })
     }
   }
   return out
 }
 
-function vitaminCards(): Card[] {
-  const out: Card[] = []
-  const deck = 'vitamins'
-  for (const v of VITAMINS) {
-    const ref = { type: 'vitamin' as const, id: v.id }
-    out.push({ id: `vdis:${v.id}`, deck, tag: 'Deficiency disease', front: `Deficiency of ${v.name} causes…`, back: v.disease, ref, quiz: 'disease' })
-    out.push({ id: `vchem:${v.id}`, deck, tag: 'Chemical name', front: `Chemical name of ${v.name}?`, back: v.chem, ref, quiz: 'chem' })
-    out.push({ id: `vsol:${v.id}`, deck, tag: 'Solubility', front: `Is ${v.name} fat- or water-soluble?`, back: v.solubility === 'fat' ? 'Fat-soluble (stored in the liver and fat)' : 'Water-soluble (excess leaves in urine)', ref })
-    out.push({ id: `vfn:${v.id}`, deck, tag: 'What it does', front: `Main jobs of ${v.name}?`, back: v.functions.slice(0, 3).join('\n'), ref })
-    out.push({ id: `vsrc:${v.id}`, deck, tag: 'Food sources', front: `Name three good food sources of ${v.name}.`, back: v.sources.slice(0, 3).map(([f]) => f).join(', '), ref, quiz: 'sources' })
-    out.push({ id: `vrda:${v.id}`, deck, tag: 'Daily need', front: `How much ${v.name} does an adult need per day?`, back: v.rda, ref, quiz: 'rda' })
-    if (v.minerals.length) {
-      const [s, why] = v.minerals[0]
-      out.push({ id: `vmin:${v.id}:${s}`, deck, tag: 'Mineral partner', front: `Which mineral works with ${v.name}? (${hideElement(why, BY_SYMBOL[s].name, s)})`, back: `${BY_SYMBOL[s].name} (${s})`, ref: { type: 'element', id: s }, quiz: 'element' })
-    }
-  }
-  return out
-}
 
 let built: Record<string, Card[]> | null = null
 /** All built-in decks, keyed by section id. Built once, on first use. */
@@ -240,7 +218,6 @@ export function builtinDecks(): Record<string, Card[]> {
     if (sec) d[sec].push(...structureCards(s, sec))
   }
   d.elements = elementCards()
-  d.vitamins = vitaminCards()
   built = d
   return d
 }

@@ -142,7 +142,7 @@ export function ProfileButton({ onStudy }: { onStudy: () => void }) {
   )
 }
 
-/** "Mark as learned" toggle used on structure, element and vitamin pages. */
+/** "Mark as learned" toggle used on structure and element pages. */
 export function LearnedButton({ type, id }: { type: ItemType; id: string }) {
   const p = useProgress()
   const done = !!p.learned[`${type}:${id}`]

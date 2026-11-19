@@ -28,7 +28,6 @@ interface Props {
   onTab: (t: StudyTab) => void
   onStructure: (id: string) => void
   onElement: (s: string) => void
-  onVitamin: (id: string) => void
 }
 
 type Screen =
@@ -43,7 +42,7 @@ function customInfo(d: CustomDeck): DeckInfo {
   return { id: d.id, label: d.title, blurb: `${d.source === 'ai' ? 'AI deck' : 'Your deck'} · ${d.topic}${d.level ? ` · ${d.level}` : ''}`, color: CUSTOM_COLOR, group: 'Custom', custom: d }
 }
 
-export default function StudyMode({ tab, onTab, onStructure, onElement, onVitamin }: Props) {
+export default function StudyMode({ tab, onTab, onStructure, onElement }: Props) {
   const p = useProgress()
   const srs = p.srs ?? {}
   const decks = builtinDecks()
@@ -75,8 +74,7 @@ export default function StudyMode({ tab, onTab, onStructure, onElement, onVitami
   const openRef = (c: { ref?: Card['ref'] }) => {
     if (!c.ref) return
     if (c.ref.type === 'structure') onStructure(c.ref.id)
-    else if (c.ref.type === 'element') onElement(c.ref.id)
-    else onVitamin(c.ref.id)
+    else onElement(c.ref.id)
   }
 
   if (screen.mode === 'review')
@@ -145,7 +143,7 @@ export default function StudyMode({ tab, onTab, onStructure, onElement, onVitami
         </>
       )}
 
-      {tab === 'progress' && <StudyView onStructure={onStructure} onElement={onElement} onVitamin={onVitamin} />}
+      {tab === 'progress' && <StudyView onStructure={onStructure} onElement={onElement} />}
     </section>
   )
 }
@@ -275,7 +273,7 @@ function Review({ title, color, cards, onDone, onOpen }: { title: string; color:
                   onOpen(card)
                 }}
               >
-                {card.ref.type === 'structure' ? 'Open in the 3D atlas →' : card.ref.type === 'element' ? 'Open the element →' : 'Open the vitamin →'}
+                {card.ref.type === 'structure' ? 'Open in 3D →' : 'Open element →'}
               </button>
             )}
           </div>

@@ -4,7 +4,6 @@ import { ALL } from '../data'
 import { BODY_BY_SYMBOL, BODY_ELEMENTS, ROLE_INFO, type BodyRole } from '../data/bodyElements'
 import { CATEGORY_COLORS, gridPos, PERIODIC, type ElementCategory } from '../data/periodic'
 import { KINDS, SYSTEMS, type Kind, type Structure, type System } from '../data/types'
-import { VITAMINS } from '../data/vitamins'
 import { configuration } from '../lib/electrons'
 import { ConfigText } from './Atom'
 
@@ -105,31 +104,6 @@ export function ElementsView({ onElement }: { onElement: (s: string) => void }) 
           </div>
         ))}
       </section>
-    </div>
-  )
-}
-
-// ---------------- Vitamins ----------------
-export function VitaminsView({ onVitamin }: { onVitamin: (id: string) => void }) {
-  return (
-    <div className="view">
-      <section className="hero-band">
-        <div>
-          <h1>Vitamins</h1>
-        </div>
-      </section>
-      <div className="vit-grid">
-        {VITAMINS.map((v) => (
-          <button key={v.id} className="vit-card" onClick={() => onVitamin(v.id)} style={{ '--c': v.color } as React.CSSProperties}>
-            <span className="vit-id">{v.id}</span>
-            <span className="vit-txt">
-              <strong>{v.chem.split(/[(,]/)[0].trim()}</strong>
-              <small>{v.solubility}-soluble · {v.formula}</small>
-              <span className="vit-def">Deficiency: {v.disease.split(';')[0].split('—')[0]}</span>
-            </span>
-          </button>
-        ))}
-      </div>
     </div>
   )
 }

@@ -1,8 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import ElementPanel from './components/ElementPanel'
 import StructureDetail from './components/StructureDetail'
-import VitaminPanel from './components/VitaminPanel'
-import { ElementsView, IndexView, VitaminsView } from './components/Views'
+import { ElementsView, IndexView } from './components/Views'
 import { getStructure, SYNTH } from './data'
 import type { Structure } from './data/types'
 import type { ModelIndex } from './lib/model'
@@ -14,19 +13,18 @@ import StudyMode, { type StudyTab } from './components/StudyMode'
 const Viewer3D = lazy(() => import('./components/Viewer3D'))
 const Landing = lazy(() => import('./components/Landing'))
 
-type View = 'home' | 'body' | 'elements' | 'vitamins' | 'study'
-type DrawerItem = { type: 'element'; symbol: string } | { type: 'vitamin'; id: string }
+type View = 'home' | 'body' | 'elements' | 'study'
+type DrawerItem = { type: 'element'; symbol: string }
 
 const VIEWS: { id: View; label: string }[] = [
   { id: 'body', label: 'Anatomy 3D' },
   { id: 'elements', label: 'Periodic table' },
-  { id: 'vitamins', label: 'Vitamins' },
   { id: 'study', label: 'Study' },
 ]
 
 const readHash = (): View => {
   const h = location.hash.slice(1)
-  return h === 'elements' || h === 'vitamins' || h === 'study' || h === 'body' ? h : 'home'
+  return h === 'elements' || h === 'study' || h === 'body' ? h : 'home'
 }
 
 export default function App() {
@@ -70,6 +68,7 @@ export default function App() {
 
   const go = (v: View) => {
     setView(v)
+    setStack([])
     try {
       history.replaceState(null, '', `#${v}`)
     } catch {
@@ -137,10 +136,6 @@ export default function App() {
   const openElement = (symbol: string) => {
     progress.record('element', symbol)
     push({ type: 'element', symbol })
-  }
-  const openVitamin = (id: string) => {
-    progress.record('vitamin', id)
-    push({ type: 'vitamin', id })
   }
   const progressUI = useMemo(() => ({ openSignIn: () => setSignIn(true) }), [])
   const top = stack[stack.length - 1]
@@ -310,8 +305,7 @@ export default function App() {
           </div>
         </div>
         {view === 'elements' && <ElementsView onElement={openElement} />}
-        {view === 'vitamins' && <VitaminsView onVitamin={openVitamin} />}
-        {view === 'study' && <StudyMode tab={studyTab} onTab={setStudyTab} onStructure={select} onElement={openElement} onVitamin={openVitamin} />}
+        {view === 'study' && <StudyMode tab={studyTab} onTab={setStudyTab} onStructure={select} onElement={openElement} />}
       </main>
 
       <footer className="foot">
@@ -320,16 +314,12 @@ export default function App() {
 
       {top && (
         <div className="drawer-wrap" onClick={() => setStack([])}>
-          <aside className="drawer" ref={drawerRef} onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label={top.type === 'element' ? 'Element details' : 'Vitamin details'}>
+          <aside className="drawer" ref={drawerRef} onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label="Element details">
             <div className="drawer-bar">
               {stack.length > 1 ? <button onClick={() => setStack((s) => s.slice(0, -1))}>← Back</button> : <span />}
               <button onClick={() => setStack([])} aria-label="Close">Close ✕</button>
             </div>
-            {top.type === 'element' ? (
-              <ElementPanel key={top.symbol} symbol={top.symbol} onVitamin={openVitamin} onStructure={select} />
-            ) : (
-              <VitaminPanel key={top.id} id={top.id} onElement={openElement} />
-            )}
+            <ElementPanel key={top.symbol} symbol={top.symbol} onStructure={select} />
           </aside>
         </div>
       )}

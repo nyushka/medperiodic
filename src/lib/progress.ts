@@ -5,7 +5,7 @@ import type { CardState, CustomDeck } from './flashcards'
 // a profile is a name on this device, so several people can share one computer.
 // The shape is deliberately simple so a cloud backend can sync it later.
 
-export type ItemType = 'structure' | 'element' | 'vitamin'
+export type ItemType = 'structure' | 'element'
 export interface Profile {
   id: string
   name: string

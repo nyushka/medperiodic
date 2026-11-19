@@ -48,7 +48,7 @@ export const apiKey = {
   },
 }
 
-export const LEVELS = ['High school', 'College', 'Medical school'] as const
+export const LEVELS = ['Pre-med / pre-dental', 'MCAT / DAT', 'Medical / dental school'] as const
 
 export interface DeckRequest {
   topic: string
@@ -96,7 +96,7 @@ const SCHEMA = {
 }
 
 function prompt(r: DeckRequest): string {
-  return `You are writing study material for MedPeriodic, a learning app about human anatomy, physiology and the chemistry of the body.
+  return `You are writing study material for MedPeriodic, an anatomy and biochemistry study app for pre-med and pre-dental students.
 
 Topic requested by the student: """${r.topic.slice(0, 200)}"""
 Level: ${r.level}
@@ -106,7 +106,7 @@ Write exactly ${r.count} flashcards and ${r.quizCount} multiple-choice quiz ques
 Flashcards (Anki style):
 - One fact per card. "front" is a question or cue of at most 25 words; "back" is the precise answer in at most 40 words.
 - "tag" is a 1–3 word subtopic so cards can be grouped.
-- Cover the topic broadly: structure, function, clinical relevance, key numbers, and any elements, vitamins or minerals involved.
+- Cover the topic broadly: structure, function, clinical relevance, key numbers, and the molecules, elements and biochemical pathways involved.
 - Use accurate, textbook-standard facts that match the level. No trick questions, no duplicates.
 
 Quiz:

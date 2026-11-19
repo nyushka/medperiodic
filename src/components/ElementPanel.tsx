@@ -1,7 +1,6 @@
 import { lazy, Suspense, useState } from 'react'
 import { BODY_BY_SYMBOL, ROLE_INFO } from '../data/bodyElements'
 import { BY_SYMBOL, CATEGORY_COLORS } from '../data/periodic'
-import { VITAMIN_BY_ID, VITAMINS } from '../data/vitamins'
 import { structuresForElement } from '../data'
 import { SYSTEMS } from '../data/types'
 import { BLOCK_OF, SHELL_NAMES, shellCounts, unpairedElectrons, valenceElectrons } from '../lib/electrons'
@@ -12,7 +11,6 @@ const Atom3D = lazy(() => import('./Atom3D'))
 
 interface Props {
   symbol: string
-  onVitamin: (id: string) => void
   onStructure: (id: string) => void
 }
 
@@ -40,9 +38,9 @@ export function elementColor(symbol: string): string {
   return b ? ROLE_INFO[b.role].color : CATEGORY_COLORS[BY_SYMBOL[symbol].category]
 }
 
-type Tab = 'overview' | 'atom' | 'health' | 'food' | 'links'
+type Tab = 'overview' | 'atom' | 'health' | 'links'
 
-export default function ElementPanel({ symbol, onVitamin, onStructure }: Props) {
+export default function ElementPanel({ symbol, onStructure }: Props) {
   const e = BY_SYMBOL[symbol]
   const b = BODY_BY_SYMBOL[symbol]
   const [tab, setTab] = useState<Tab>(b ? 'overview' : 'atom')
@@ -50,11 +48,10 @@ export default function ElementPanel({ symbol, onVitamin, onStructure }: Props) 
   const neutrons = Math.round(e.mass) - e.z
   const unpaired = unpairedElectrons(e.z)
   const where = structuresForElement(symbol)
-  const vitaminsContaining = VITAMINS.filter((v) => v.elements.includes(symbol))
   const toxic = b?.role === 'toxic'
 
   const tabs: [Tab, string][] = b
-    ? [['overview', 'Overview'], ['atom', 'Atom'], ['health', 'Health'], ['food', toxic ? 'Exposure' : 'Food & intake'], ['links', 'In the body']]
+    ? [['overview', 'Overview'], ['atom', 'Atom'], ['health', 'Clinical'], ['links', 'In the body']]
     : [['atom', 'Atom']]
 
   return (
@@ -81,7 +78,6 @@ export default function ElementPanel({ symbol, onVitamin, onStructure }: Props) 
         <dl className="keyfigs">
           <div><dt>In your body</dt><dd>{b.amount}</dd></div>
           <div><dt>Body mass</dt><dd>{b.percent}</dd></div>
-          <div className="wide"><dt>Daily need</dt><dd>{b.rda}</dd></div>
         </dl>
       )}
 
@@ -169,35 +165,6 @@ export default function ElementPanel({ symbol, onVitamin, onStructure }: Props) 
             <section className="block">
               <h3><i className="dot ex" />Too much</h3>
               <List items={b.excess} tone="ex" max={3} />
-              {b.ul && <p className="note">Upper limit: {b.ul}</p>}
-            </section>
-          )}
-        </div>
-      )}
-
-      {tab === 'food' && b && (
-        <div className="tabpane">
-          <section className="block">
-            <h3>{toxic ? 'Sources of exposure' : 'Best food sources'}</h3>
-            <table className="foods">
-              <tbody>
-                {b.sources.map(([f, amt], i) => (
-                  <tr key={i}>
-                    <td>{f}</td>
-                    <td>{amt}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </section>
-          <section className="block">
-            <h3><i className="dot boost" />{toxic ? 'How to reduce exposure' : 'How to get more'}</h3>
-            <List items={b.boost} tone="boost" max={4} />
-          </section>
-          {b.blockers && (
-            <section className="block">
-              <h3>What blocks absorption</h3>
-              <List items={b.blockers} tone="def" />
             </section>
           )}
         </div>
@@ -205,23 +172,6 @@ export default function ElementPanel({ symbol, onVitamin, onStructure }: Props) 
 
       {tab === 'links' && b && (
         <div className="tabpane">
-          {(b.vitamins.length > 0 || vitaminsContaining.length > 0) && (
-            <section className="block">
-              <h3>Vitamin connections</h3>
-              <div className="link-list">
-                {b.vitamins.map(([id, why]) => (
-                  <button key={id} className="link-row" onClick={() => onVitamin(id)}>
-                    <span className="vb" style={{ '--c': VITAMIN_BY_ID[id].color } as React.CSSProperties}>{id}</span>
-                    <span>
-                      <strong>{VITAMIN_BY_ID[id].name}</strong>
-                      <small>{why}</small>
-                    </span>
-                  </button>
-                ))}
-              </div>
-              {vitaminsContaining.length > 0 && <p className="note">Part of the molecule of {vitaminsContaining.map((v) => v.name).join(', ')}.</p>}
-            </section>
-          )}
           <section className="block">
             <h3>Where it works in the body</h3>
             <div className="link-list">
